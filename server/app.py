@@ -1,17 +1,21 @@
-#!/usr/bin/env python3
-
-# Standard library imports
-
-# Remote library imports
-from flask import request
+from flask import request, session
 from flask_restful import Resource
+from marshmallow.exceptions import ValidationError
 
-# Local imports
-from config import app, db, api
-# Add your model imports
+from config import app, db, api, ma
+from models import User, Client, Job, Order
+
+# UserSchema, ClientSchema, JobSchema, OrderSchema
 
 
-# Views go here!
+# user_schema = UserSchema()
+# users_schema = UserSchema(many=True)
+# client_schema = ClientSchema()
+# clients_schema = ClientSchema(many=True)
+# job_schema = JobSchema()
+# jobs_schema = JobSchema(many=True)
+# order_schema = OrderSchema()
+# orders_schema = OrderSchema(many=True)
 
 @app.route('/')
 def index():
