@@ -1,5 +1,5 @@
 from config import db, bcrypt, ma
-from marshmallow import post_load, validates, ValidationError
+from marshmallow import post_load, validate, ValidationError
 from datetime import date, datetime
 
 class User(db.Model):
@@ -99,3 +99,59 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
       user.set_password(data['password'])
       return user
     return user(**data)
+  
+class JobSchema(ma.SQLAlchemyAutoSchema):
+  class Meta:
+    model = Job
+    load_instance = True
+    exclude = ('jobs',)
+
+  @validates('title')
+  def validate_title(self, title):
+    if len(title) < 5:
+      raise ValidationError('Job title must be at least 5 characters long')
+
+  @validates('description')
+  def validate_description(self, description):
+    if len(description) < 20:
+      raise ValidationError('Job description must be at least 20 characters long')
+    
+  @validates('duration')
+  def validate_duration(self, duration):
+    if duration <= 0:
+      raise ValidationError('Job duration time must be greater than 0')
+
+  @validates('price')
+  def validate_price(self, price):
+    if price <= 0:
+      raise ValidationError('Job price must be greater than 0')
+
+  @validates('rate')
+  def validate_rate(self, rate):
+    if len(rate) < 10:
+      raise ValidationError('Job rate must be at least 10 characters long')
+
+class ClientSchema(ma.SQLAlchemyAutoSchema):
+  class Meta:
+    model = Client
+    load_instance = True
+    exclude = ('clients',)
+
+  @validates('name')
+  def validate_name(self, name):
+    if len(name) < 2:
+      raise ValidationError('Client name must be at least 2 characters long')
+    
+  @validates('email')
+  def validate_email(self, value):
+    if '@' not in value or '.' not in value:
+      raise ValidationError('Invalid email format')
+    if len(value) < 5:
+      raise ValidationError('Email must be at least 5 characters long')
+    
+  @validates('notes')
+  def validate_notes(self, notes):
+    if len(notes) < 20:
+      raise ValidationError('Client notes must be at least 20 characters long')
+
+  
