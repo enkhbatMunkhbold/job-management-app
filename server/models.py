@@ -1,6 +1,7 @@
-from config import db, bcrypt, ma
-from marshmallow import post_load, validate, ValidationError
+from marshmallow import validates, ValidationError, post_load, fields
+from marshmallow_sqlalchemy import auto_field
 from datetime import date, datetime
+from config import db, bcrypt, ma
 
 class User(db.Model):
   __tablename__ = 'users'
@@ -73,7 +74,10 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     model = User
     load_instance = True
     exclude = ('_password_hash', 'orders')
-  password = ma.String(load_only=True)
+
+  username = auto_field(required=True)
+  email = auto_field(required=True)
+  password = fields.String(load_only=True, required=True)
 
   @validates('email')
   def validate_email(self, value):
@@ -86,25 +90,28 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
   def validate_fname(self, username):
     if len(username) < 2:
       raise ValidationError('Username must be at least 2 characters long')
-    if not username.replace(' ', '').isalpha():
+    if not username.isalnum():
       raise ValidationError('Username must contain only letters and spaces')
 
   @post_load
-  def make_traveler(self, data, **kwargs):
-    if 'password' in data:
-      user = User(
-        username=data['username'],
-        email=data['email']
-      )
-      user.set_password(data['password'])
-      return user
-    return user(**data)
+  def make_user(self, data, **kwargs):
+    password = data.pop('password', None)
+    user = User(**data)
+    if password:
+      user.set_password(password)
+    return user
   
 class JobSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = Job
     load_instance = True
-    exclude = ('jobs',)
+    exclude = ('job.users',)
+
+  title = auto_field(required=True)
+  description = auto_field(required=True)
+  duration = auto_field(required=True)
+  price = auto_field(required=True)
+  rate = auto_field(required=True)
 
   @validates('title')
   def validate_title(self, title):
@@ -135,7 +142,11 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = Client
     load_instance = True
-    exclude = ('clients',)
+    exclude = ('client.users',)
+
+  name = auto_field(required=True)
+  email = auto_field(required=True)
+  notes = auto_field(required=True)
 
   @validates('name')
   def validate_name(self, name):
