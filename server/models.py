@@ -10,8 +10,8 @@ class User(db.Model):
   email = db.Column(db.String(60), unique=True, nullable=False)
   _password_hash = db.Column(db.String, nullable=False)
 
-  jobs = db.relationship('Job', backref='user', lazy=True)
-  clients = db.relationship('Client', backref='user', lazy=True)
+  orders = db.relationship('Order', backref='user', cascade='all, delete-orphan', lazy=True)
+  
 
   def set_password(self, password):
       if len(password) < 8:
@@ -31,7 +31,7 @@ class Client(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(30), nullable=False)
   email = db.Column(db.String(60), unique=True, nullable=False)
-  phone = db.Column(db.String, nullable=False)
+  phone = db.Column(db.String(12), nullable=False)  # Format: ###-###-####
   notes = db.Column(db.Text, nullable=False)
 
   orders = db.relationship('Order', backref='client', cascade='all, delete-orphan', lazy=True)
@@ -74,7 +74,7 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = User
     load_instance = True
-    exclude = ('_password_hash', 'orders')
+    exclude = ('_password_hash',)
 
   username = auto_field(required=True)
   email = auto_field(required=True)
@@ -106,7 +106,6 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = Job
     load_instance = True
-    exclude = ('users',)
 
   title = auto_field(required=True)
   description = auto_field(required=True)
@@ -143,28 +142,53 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = Client
     load_instance = True
-    exclude = ('users')
 
   name = auto_field(required=True)
   email = auto_field(required=True)
+  phone = auto_field(required=True)
   notes = auto_field(required=True)
 
   @validates('name')
   def validate_name(self, value):
-    if len(value) < 2:
+    if not value or len(value.strip()) < 2:
       raise ValidationError('Client name must be at least 2 characters long')
+    if len(value.strip()) > 30:
+      raise ValidationError('Client name must be 30 characters or less')
+    # Check if name contains only letters, spaces, and common punctuation
+    import re
+    if not re.match(r'^[a-zA-Z\s\-\'\.]+$', value.strip()):
+      raise ValidationError('Client name can only contain letters, spaces, hyphens, apostrophes, and periods')
     
   @validates('email')
   def validate_email(self, value):
-    if '@' not in value or '.' not in value:
+    if not value or '@' not in value or '.' not in value:
       raise ValidationError('Invalid email format')
     if len(value) < 5:
       raise ValidationError('Email must be at least 5 characters long')
+    if len(value) > 60:
+      raise ValidationError('Email must be 60 characters or less')
+    # Basic email format validation
+    import re
+    email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if not re.match(email_pattern, value):
+      raise ValidationError('Invalid email format')
+    
+  @validates('phone')
+  def validate_phone(self, value):
+    if not value:
+      raise ValidationError('Phone number is required')
+    # Validate phone format: ###-###-####
+    import re
+    phone_pattern = r'^\d{3}-\d{3}-\d{4}$'
+    if not re.match(phone_pattern, value):
+      raise ValidationError('Phone number must be in format: ###-###-####')
     
   @validates('notes')
   def validate_notes(self, value):
-    if len(value) < 20:
+    if not value or len(value.strip()) < 20:
       raise ValidationError('Client notes must be at least 20 characters long')
+    if len(value.strip()) > 1000:
+      raise ValidationError('Client notes must be 1000 characters or less')
 
 class OrderSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
