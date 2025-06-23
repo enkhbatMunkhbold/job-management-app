@@ -10,7 +10,8 @@ class User(db.Model):
   email = db.Column(db.String(60), unique=True, nullable=False)
   _password_hash = db.Column(db.String, nullable=False)
 
-  orders = db.relationship('Order', backref='user', lazy=True)
+  jobs = db.relationship('Job', backref='user', lazy=True)
+  clients = db.relationship('Client', backref='user', lazy=True)
 
   def set_password(self, password):
       if len(password) < 8:
@@ -33,7 +34,7 @@ class Client(db.Model):
   phone = db.Column(db.String, nullable=False)
   notes = db.Column(db.Text, nullable=False)
 
-  orders = db.relationship('Order', backref='client', lazy=True)
+  orders = db.relationship('Order', backref='client', cascade='all, delete-orphan', lazy=True)
     
   def __repr__(self):
     return f'<Client {self.name}>'
@@ -48,7 +49,7 @@ class Job(db.Model):
   duration = db.Column(db.String, nullable=False)
   price = db.Column(db.Float, nullable=False)
 
-  orders = db.relationship('Order', backref='job', lazy=True)
+  orders = db.relationship('Order', backref='job', cascade='all, delete-orphan', lazy=True)
     
   def __repr__(self):
     return f'<Style {self.title}>' 
@@ -60,7 +61,7 @@ class Order(db.Model):
    description = db.Column(db.Text, nullable=False)
    location = db.Column(db.Text, nullable=False)
    start_date = db.Column(db.Date, nullable=False)
-   status = db.Column(db.String, nullable=False)
+   status = db.Column(db.String(20), nullable=False, default='pending')
 
    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
@@ -87,10 +88,10 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
       raise ValidationError('Email must be at least 5 characters long')
 
   @validates('username')
-  def validate_fname(self, username):
-    if len(username) < 2:
+  def validate_fname(self, value):
+    if len(value) < 2:
       raise ValidationError('Username must be at least 2 characters long')
-    if not username.isalnum():
+    if not value.isalnum():
       raise ValidationError('Username must contain only letters and spaces')
 
   @post_load
@@ -114,28 +115,28 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
   rate = auto_field(required=True)
 
   @validates('title')
-  def validate_title(self, title):
-    if len(title) < 5:
+  def validate_title(self, value):
+    if len(value) < 5:
       raise ValidationError('Job title must be at least 5 characters long')
 
   @validates('description')
-  def validate_description(self, description):
-    if len(description) < 20:
+  def validate_description(self, value):
+    if len(value) < 10:
       raise ValidationError('Job description must be at least 20 characters long')
     
   @validates('duration')
-  def validate_duration(self, duration):
-    if duration <= 0:
+  def validate_duration(self, value):
+    if value <= 0:
       raise ValidationError('Job duration time must be greater than 0')
 
   @validates('price')
-  def validate_price(self, price):
-    if price <= 0:
+  def validate_price(self, value):
+    if value <= 0:
       raise ValidationError('Job price must be greater than 0')
 
   @validates('rate')
-  def validate_rate(self, rate):
-    if len(rate) < 10:
+  def validate_rate(self, value):
+    if len(value) < 10:
       raise ValidationError('Job rate must be at least 10 characters long')
 
 class ClientSchema(ma.SQLAlchemyAutoSchema):
@@ -149,8 +150,8 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   notes = auto_field(required=True)
 
   @validates('name')
-  def validate_name(self, name):
-    if len(name) < 2:
+  def validate_name(self, value):
+    if len(value) < 2:
       raise ValidationError('Client name must be at least 2 characters long')
     
   @validates('email')
@@ -161,8 +162,43 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
       raise ValidationError('Email must be at least 5 characters long')
     
   @validates('notes')
-  def validate_notes(self, notes):
-    if len(notes) < 20:
+  def validate_notes(self, value):
+    if len(value) < 20:
       raise ValidationError('Client notes must be at least 20 characters long')
 
-  
+class OrderSchema(ma.SQLAlchemyAutoSchema):
+  class Meta:
+    model = Order
+    load_instance = True
+    include_fk = True
+    exclude = ('user.orders')
+
+  id = auto_field(dump_only=True)
+  description = auto_field(required=True)
+  location = auto_field(required=True)
+  start_date = auto_field(required=True)
+  status = auto_field(required=True)
+
+  user_id = auto_field(required=True)
+  client_id = auto_field(required=True)
+  job_id = auto_field(required=True)
+
+  user = fields.Nested('UserSchema', dump_only=True)
+  client = fields.Nested('ClientSchema', dump_only=True)
+  job = fields.Nested('JobSchema', dump_only=True)
+
+  @validates('description')
+  def validate_description(self, value):
+    if len(value.strip()) < 5:
+      raise ValidationError('Order description must be at least 20 characters long')
+    
+  @validates('location')
+  def validate_description(self, value):
+    if len(value.strip()) < 10:
+      raise ValidationError('Order location must be at least 20 characters long')
+    
+  @validates('status')
+  def validate_status(self, value):
+    allowed_statuses = ['pending', 'in progress', 'completed', 'canceled']
+    if value.lower() not in allowed_statuses:
+      raise ValidationError(f'Status must be one of: {', '.join(allowed_statuses)}')
