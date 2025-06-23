@@ -154,10 +154,10 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
       raise ValidationError('Client name must be at least 2 characters long')
     if len(value.strip()) > 30:
       raise ValidationError('Client name must be 30 characters or less')
-    # Check if name contains only letters, spaces, and common punctuation
+    # Check if name contains only letters, numbers, spaces, and common punctuation
     import re
-    if not re.match(r'^[a-zA-Z\s\-\'\.]+$', value.strip()):
-      raise ValidationError('Client name can only contain letters, spaces, hyphens, apostrophes, and periods')
+    if not re.match(r'^[a-zA-Z0-9\s\-\'\.]+$', value.strip()):
+      raise ValidationError('Client name can only contain letters, numbers, spaces, hyphens, apostrophes, and periods')
     
   @validates('email')
   def validate_email(self, value):
