@@ -30,7 +30,7 @@ class Client(db.Model):
 
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(30), nullable=False)
-  emial = db.Column(db.String(60), nullable=False)
+  email = db.Column(db.String(60), unique=True, nullable=False)
   phone = db.Column(db.String, nullable=False)
   notes = db.Column(db.Text, nullable=False)
 
@@ -106,7 +106,7 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = Job
     load_instance = True
-    exclude = ('job.users',)
+    exclude = ('users',)
 
   title = auto_field(required=True)
   description = auto_field(required=True)
@@ -122,7 +122,7 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
   @validates('description')
   def validate_description(self, value):
     if len(value) < 10:
-      raise ValidationError('Job description must be at least 20 characters long')
+      raise ValidationError('Job description must be at least 10 characters long')
     
   @validates('duration')
   def validate_duration(self, value):
@@ -143,7 +143,7 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = Client
     load_instance = True
-    exclude = ('client.users',)
+    exclude = ('users')
 
   name = auto_field(required=True)
   email = auto_field(required=True)
@@ -171,7 +171,6 @@ class OrderSchema(ma.SQLAlchemyAutoSchema):
     model = Order
     load_instance = True
     include_fk = True
-    exclude = ('user.orders')
 
   id = auto_field(dump_only=True)
   description = auto_field(required=True)
@@ -190,15 +189,15 @@ class OrderSchema(ma.SQLAlchemyAutoSchema):
   @validates('description')
   def validate_description(self, value):
     if len(value.strip()) < 5:
-      raise ValidationError('Order description must be at least 20 characters long')
+      raise ValidationError('Order description must be at least 5 characters long')
     
   @validates('location')
-  def validate_description(self, value):
+  def validate_location(self, value):
     if len(value.strip()) < 10:
-      raise ValidationError('Order location must be at least 20 characters long')
+      raise ValidationError('Order location must be at least 10 characters long')
     
   @validates('status')
   def validate_status(self, value):
     allowed_statuses = ['pending', 'in progress', 'completed', 'canceled']
     if value.lower() not in allowed_statuses:
-      raise ValidationError(f'Status must be one of: {', '.join(allowed_statuses)}')
+      raise ValidationError(f"Status must be one of: {', '.join(allowed_statuses)}")
