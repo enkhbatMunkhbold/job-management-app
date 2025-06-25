@@ -99,8 +99,62 @@ class Clients(Resource):
         except Exception as e:
             print(f"Error in Clients.get(): {str(e)}")
             return {'error': f'Internal server error: {str(e)}'}, 500
+    def post(self):
+        try: 
+            data = request.get_json()
+            new_client = client_schema.load(data)
+
+            data.session.add(new_client)
+            data.session.commit()
+
+            return client_schema.dump(new_client), 201
+        except Exception as e:
+            return ({'error': f'Internal server error: {str(e)}'}), 500
         
 api.add_resource(Clients, '/clients')
+
+class ClientById(Resource):
+    def delete(self, client_id):
+        client = Client.query.get(client_id)
+
+        if not client:
+            return {'error': 'Client not found'}, 404
+        
+        if client.orders:
+            return {'error': 'Cannot delete client with existing order!'}, 400
+        
+        serialized_client = client_schema.dump(client)        
+        db.session.delete(client)
+        db.session.commit()
+        return {
+            'message': 'Client deleted successfully',
+            'deleted_client': serialized_client
+        }, 204
+    
+    def patch(self, client_id):        
+        client = Client.query.get(client_id)
+
+        if not client:
+            return {'error': 'Client not found'}, 404
+        
+        try:
+            data = request.get_json()
+            if not data:
+                return {'error': 'No data provided'}, 400
+
+            updated_client = client_schema.load(data, instance=client, partial=True)
+            db.session.commit()
+
+            return client_schema.dump(updated_client), 200  
+
+        except ValidationError as ve:
+            return {'error': ve.messages}, 400
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Internal server error: {str(e)}'}, 500  
+    
+api.add_resource('/clients/<int:client_id>')
+
 
 class Jobs(Resource):
     def get(self):
@@ -148,6 +202,53 @@ class Jobs(Resource):
             return {'error': f'Internal server error {str(e)}'}, 400
     
 api.add_resource(Jobs, '/jobs')
+
+class JobById(Resource):
+    def delete(self, job_id):
+        job = Job.query.get(job_id)
+
+        if not job:
+            return {'error': 'Job not found'}, 404
+        
+        if job.orders:
+            return {'error': 'Cannot delete job with existing order!'}, 400
+        
+        serialized_job = job_schema.dump(job)
+        db.session.delete(job)
+        db.session.commit()
+
+        return {
+            'message': 'Job deleted successfully',
+            'deleted_job': serialized_job
+        }
+    
+    def patch(self, job_id):
+        job = Job.query.get(job_id)
+
+        if not job:
+            return {'error': 'Job not found'}, 404
+        
+        try:
+            data = request.get_json()
+
+            if not data:
+                return {'error': 'No data provided'}, 404
+
+            updated_job = job_schema.load(data, instance=job, partial=True)
+            db.session.commit()
+
+            return job_schema.dump(updated_job), 200
+        
+        except ValidationError as ve:
+            return {'error': ve.messages}, 400
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Internal server error {str(e)}'}, 500
+    
+api.add_resource(JobById, '/jobs/<int:job_id>')
+
+# class OrdersById(Resource):
+#     def delete
 
 
 if __name__ == '__main__':
