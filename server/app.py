@@ -123,13 +123,17 @@ class ClientById(Resource):
         if client.orders:
             return {'error': 'Cannot delete client with existing order!'}, 400
         
-        serialized_client = client_schema.dump(client)        
-        db.session.delete(client)
-        db.session.commit()
-        return {
-            'message': 'Client deleted successfully',
-            'deleted_client': serialized_client
-        }, 204
+        serialized_client = client_schema.dump(client)  
+        try:      
+            db.session.delete(client)
+            db.session.commit()
+            return {
+                'message': 'Client deleted successfully',
+                'deleted_client': serialized_client
+            }, 200
+        
+        except Exception as e:
+            return {'error': f'Internal server error {str(e)}'}, 500
     
     def patch(self, client_id):        
         client = Client.query.get(client_id)
@@ -214,13 +218,19 @@ class JobById(Resource):
             return {'error': 'Cannot delete job with existing order!'}, 400
         
         serialized_job = job_schema.dump(job)
-        db.session.delete(job)
-        db.session.commit()
 
-        return {
-            'message': 'Job deleted successfully',
-            'deleted_job': serialized_job
-        }
+        try:
+            db.session.delete(job)
+            db.session.commit()
+
+            return {
+                'message': 'Job deleted successfully',
+                'deleted_job': serialized_job
+            }, 200
+        
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Internal server error {str(e)}'}, 500
     
     def patch(self, job_id):
         job = Job.query.get(job_id)
@@ -247,9 +257,46 @@ class JobById(Resource):
     
 api.add_resource(JobById, '/jobs/<int:job_id>')
 
-# class OrdersById(Resource):
-#     def delete
+class Orders(Resource):
+    def post(self):
+        try:
+            data = request.get_json()
+            new_order = order_schema.load(data)
 
+            db.session.add(new_order)
+            db.session.commit()
+            return order_schema.dump(new_order), 201
+        
+        except ValidationError as ve:
+            return {'error': ve.messages}, 400
+        except Exception as e:
+            return {'error': f'Internal server error {str(e)}'}, 500
+        
+api.add_resource(Orders, '/orders')
+
+class OrderById(Resource):
+    def delete(self, order_id):
+        order = Order.query.get(order_id)
+
+        if not order:
+            return {'error': 'Order not found'}, 404
+        
+        serialized_order = order_schema.dump(order)
+
+        try:
+            db.session.delete(order)
+            db.session.commit()
+
+            return {
+                'message': 'Order deleted successfully',
+                'deleted_order': serialized_order
+            }, 200
+        
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Internal server error {str(e)}'}, 500
+        
+api.add_resource(OrderById, '/orders/<int:order_id')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
