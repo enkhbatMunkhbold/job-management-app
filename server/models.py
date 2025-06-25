@@ -10,7 +10,9 @@ class User(db.Model):
   email = db.Column(db.String(60), unique=True, nullable=False)
   _password_hash = db.Column(db.String, nullable=False)
 
-  orders = db.relationship('Order', backref='user', cascade='all, delete-orphan', lazy=True)
+  # orders = db.relationship('Order', backref='user', cascade='all, delete-orphan', lazy=True)
+  jobs = db.relationship('Job', secondary='orders', viewonly=True)
+  clients = db.relationship('Client', secondary='orders', viewonly=True)
   
 
   def set_password(self, password):
@@ -123,11 +125,6 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
     if len(value) < 10:
       raise ValidationError('Job description must be at least 10 characters long')
     
-  @validates('duration')
-  def validate_duration(self, value):
-    if value <= 0:
-      raise ValidationError('Job duration time must be greater than 0')
-
   @validates('price')
   def validate_price(self, value):
     if value <= 0:
@@ -137,6 +134,10 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
   def validate_rate(self, value):
     if len(value) < 10:
       raise ValidationError('Job rate must be at least 10 characters long')
+    
+class JobPublicSchema(JobSchema):
+  class Meta(JobSchema.Meta):
+    exclude = ('rate', 'price')
 
 class ClientSchema(ma.SQLAlchemyAutoSchema):
   class Meta:

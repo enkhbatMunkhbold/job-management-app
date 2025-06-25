@@ -3,7 +3,7 @@ from flask_restful import Resource
 from marshmallow.exceptions import ValidationError
 
 from config import app, db, api, ma
-from models import User, Client, Job, Order, UserSchema, ClientSchema, JobSchema, OrderSchema
+from models import User, Client, Job, Order, UserSchema, ClientSchema, JobSchema, JobPublicSchema, OrderSchema
 
 
 user_schema = UserSchema()
@@ -12,6 +12,8 @@ client_schema = ClientSchema()
 clients_schema = ClientSchema(many=True)
 job_schema = JobSchema()
 jobs_schema = JobSchema(many=True)
+job_public_schema = JobPublicSchema()
+jobs_public_schema = JobPublicSchema(many=True)
 order_schema = OrderSchema()
 orders_schema = OrderSchema(many=True)
 
@@ -29,14 +31,16 @@ class Register(Resource):
             if User.query.filter_by(email=data['email']).first():
                 return jsonify({'error': 'Email already exists'}), 400
 
-            user = User(username=data['username'], email=data['email'])
-            user.password_hash(data['password'])
-            db.session.add(user)
+            new_user = user_schema.load(data)
+            db.session.add(new_user)
             db.session.commit()
-            session['user_id'] = user.id
-            return users_schema.dump(user), 201
+            session['user_id'] = new_user.id
+
+            return users_schema.dump(new_user), 201
+        
         except ValidationError as e:
             return jsonify({'error': str(e)}), 400
+        
         except Exception as e:
             return jsonify({'error': 'An error occured during registration'}), 500
         
@@ -50,10 +54,13 @@ class Login(Resource):
                 return jsonify({'error': 'Missing required fields'}), 400
             
             user = User.query.filter_by(username=data['username']).first()
+
             if user and user.authenticate(data['password']):
                 session['user_id'] = user.id
                 return users_schema.dump(user), 200
+            
             return jsonify({'message': 'Invalid credentials'}), 401
+        
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
@@ -86,23 +93,9 @@ class Clients(Resource):
             if not user:
                 return {'error': 'User not found'}, 404
             
-            # Get clients associated with this user through orders
-            from sqlalchemy import distinct
-            client_ids = db.session.query(distinct(Order.client_id)).filter(Order.user_id == user_id).all()
-            client_ids = [client_id[0] for client_id in client_ids]
-            
-            # Get the actual client objects
-            user_clients = Client.query.filter(Client.id.in_(client_ids)).all()
-            
-            # Debug: print what we're trying to serialize
-            print(f"User ID: {user_id}")
-            print(f"Client IDs found: {client_ids}")
-            print(f"Number of clients: {len(user_clients)}")
-            
-            result = clients_schema.dump(user_clients)
-            print(f"Serialized result: {result}")
-            
+            result = clients_schema.dump(user.clients)            
             return result, 200
+        
         except Exception as e:
             print(f"Error in Clients.get(): {str(e)}")
             return {'error': f'Internal server error: {str(e)}'}, 500
@@ -111,35 +104,48 @@ api.add_resource(Clients, '/clients')
 
 class Jobs(Resource):
     def get(self):
+        jobs = Job.query.all()
+        result = jobs_public_schema.dump(jobs)
+        return result, 200
+    #     try:
+    #         user_id = session.get('user_id')
+    #         if not user_id:
+    #             return {'error': 'Not authenticated'}, 401
+            
+    #         user = db.session.get(User, user_id)
+    #         if not user:
+    #             return {'error': 'User not found'}, 404        
+
+    #         result = jobs_schema.dump(user.jobs)            
+    #         return result, 200
+        
+    #     except Exception as e:
+    #         print(f"Error in Jobs.get(): {str(e)}")
+    #         return {'error': f'Internal server error: {str(e)}'}, 500
+        
+    def post(self):
         try:
-            user_id = session.get('user_id')
-            if not user_id:
-                return {'error': 'Not authenticated'}, 401
+            # user_id = session.get('user_id')
+            # if not user_id:
+            #     return {'error': 'Not authenticated'}, 401
             
-            user = db.session.get(User, user_id)
-            if not user:
-                return {'error': 'User not found'}, 404
+            # user = db.session.get(User, user_id)
+            # if not user:
+            #     return {'error': 'User not found'}, 404
             
-            # Get jobs associated with this user through orders
-            from sqlalchemy import distinct
-            job_ids = db.session.query(distinct(Order.job_id)).filter(Order.user_id == user_id).all()
-            job_ids = [job_id[0] for job_id in job_ids]
-            
-            # Get the actual job objects
-            user_jobs = Job.query.filter(Job.id.in_(job_ids)).all()
-            
-            # Debug: print what we're trying to serialize
-            print(f"User ID: {user_id}")
-            print(f"Job IDs found: {job_ids}")
-            print(f"Number of jobs: {len(user_jobs)}")
-            
-            result = jobs_schema.dump(user_jobs)
-            print(f"Serialized result: {result}")
-            
-            return result, 200
+            data = request.get_json()
+            new_job = job_schema.load(data)
+
+            db.session.add(new_job)
+            db.session.commit()
+            return job_public_schema.dump(new_job), 201
+        
+        except ValidationError as ve:
+            return {'error': ve.messages}, 400
+        
         except Exception as e:
-            print(f"Error in Jobs.get(): {str(e)}")
-            return {'error': f'Internal server error: {str(e)}'}, 500
+            db.session.rollback()
+            return {'error': f'Internal server error {str(e)}'}, 400
     
 api.add_resource(Jobs, '/jobs')
 
