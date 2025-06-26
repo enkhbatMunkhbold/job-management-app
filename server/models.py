@@ -1,6 +1,6 @@
 from marshmallow import validates, ValidationError, post_load, fields
 from marshmallow_sqlalchemy import auto_field
-from datetime import date, datetime
+from datetime import date
 from config import db, bcrypt, ma
 
 class User(db.Model):
@@ -226,3 +226,8 @@ class OrderSchema(ma.SQLAlchemyAutoSchema):
     allowed_statuses = ['pending', 'in progress', 'completed', 'canceled']
     if value.lower() not in allowed_statuses:
       raise ValidationError(f"Status must be one of: {', '.join(allowed_statuses)}")
+    
+  @validates('start_date')
+  def validate_start_date(self, value):
+    if value < date.today():
+      raise ValidationError('Start date must be in the future')
