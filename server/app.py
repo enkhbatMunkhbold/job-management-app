@@ -157,7 +157,7 @@ class ClientById(Resource):
             db.session.rollback()
             return {'error': f'Internal server error: {str(e)}'}, 500  
     
-api.add_resource('/clients/<int:client_id>')
+api.add_resource(ClientById, '/clients/<int:client_id>')
 
 
 class Jobs(Resource):
@@ -296,7 +296,7 @@ class OrderById(Resource):
             db.session.rollback()
             return {'error': f'Internal server error {str(e)}'}, 500
         
-api.add_resource(OrderById, '/orders/<int:order_id')
+api.add_resource(OrderById, '/orders/<int:order_id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
