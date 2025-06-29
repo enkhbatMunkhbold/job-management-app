@@ -6,15 +6,13 @@ from config import db, bcrypt, ma
 class User(db.Model):
   __tablename__ = 'users'
   id = db.Column(db.Integer, primary_key=True)
-  username = db.Column(db.String(30), nullable=False)
+  username = db.Column(db.String(30), unique=True, nullable=False)
   email = db.Column(db.String(60), unique=True, nullable=False)
   _password_hash = db.Column(db.String, nullable=False)
 
-  # orders = db.relationship('Order', backref='user', cascade='all, delete-orphan', lazy=True)
-  jobs = db.relationship('Job', secondary='orders', viewonly=True)
-  clients = db.relationship('Client', secondary='orders', viewonly=True)
+  clients = db.relationship('Client', backref='user', cascade="all, delete", lazy=True)
+  # orders = db.relationship('Order', backref='user', lazy=True)  
   
-
   def set_password(self, password):
       if len(password) < 8:
         raise ValueError("Password must be at least 8 characters long")
@@ -29,14 +27,16 @@ class User(db.Model):
 
 class Client(db.Model):
   __tablename__ = 'clients'
-
+  
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(30), nullable=False)
   email = db.Column(db.String(60), unique=True, nullable=False)
-  phone = db.Column(db.String(12), nullable=False)  # Format: ###-###-####
+  phone = db.Column(db.String(12), nullable=False) 
   notes = db.Column(db.Text, nullable=False)
-
-  orders = db.relationship('Order', backref='client', cascade='all, delete-orphan', lazy=True)
+  user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+  
+  orders = db.relationship('Order', backref='client', lazy=True)
+  jobs = db.relationship('Job', secondary='orders', viewonly=True)
     
   def __repr__(self):
     return f'<Client {self.name}>'
@@ -46,31 +46,31 @@ class Job(db.Model):
 
   id = db.Column(db.Integer, primary_key=True)
   title = db.Column(db.String(30), nullable=False)
+  category = db.Column(db.String(30), nullable=False)
   description = db.Column(db.Text, nullable=False)
-  rate = db.Column(db.String, nullable=False)
-  duration = db.Column(db.String, nullable=False)
-  price = db.Column(db.Float, nullable=False)
 
-  orders = db.relationship('Order', backref='job', cascade='all, delete-orphan', lazy=True)
+  orders = db.relationship('Order', backref='job', cascade='all, delete-orphan', lazy=True, overlaps="clients")
+  # clients = db.relationship('Client', secondary='orders', backref='jobs', lazy='dynamic')
     
   def __repr__(self):
     return f'<Style {self.title}>' 
 
 class Order(db.Model):
-   __tablename__ = 'orders'
+  __tablename__ = 'orders'
 
-   id = db.Column(db.Integer, primary_key=True)
-   description = db.Column(db.Text, nullable=False)
-   location = db.Column(db.Text, nullable=False)
-   start_date = db.Column(db.Date, nullable=False)
-   status = db.Column(db.String(20), nullable=False, default='pending')
+  id = db.Column(db.Integer, primary_key=True)
+  description = db.Column(db.Text)
+  rate = db.Column(db.String(20), nullable=False)  
+  location = db.Column(db.Text, nullable=False)
+  start_date = db.Column(db.Date, nullable=False)
+  duration = db.Column(db.String, nullable=False)
+  status = db.Column(db.String(20), nullable=False, default='pending')
 
-   user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-   client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
-   job_id = db.Column(db.Integer, db.ForeignKey('jobs.id'), nullable=False)
+  client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+  job_id = db.Column(db.Integer, db.ForeignKey('jobs.id'), nullable=False)
 
-   def __repr__(self):
-      return f'<Order {self.status}>'
+  def __repr__(self):
+     return f'<Order {self.status}>'
    
 class UserSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
@@ -111,9 +111,8 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
 
   title = auto_field(required=True)
   description = auto_field(required=True)
-  duration = auto_field(required=True)
-  price = auto_field(required=True)
-  rate = auto_field(required=True)
+  # Remove the orders relationship to prevent circular reference
+  # orders = ma.Nested('OrderSchema', many=True, exclude=('job',))
 
   @validates('title')
   def validate_title(self, value):
@@ -123,21 +122,11 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
   @validates('description')
   def validate_description(self, value):
     if len(value) < 10:
-      raise ValidationError('Job description must be at least 10 characters long')
+      raise ValidationError('Job description must be at least 10 characters long')  
     
-  @validates('price')
-  def validate_price(self, value):
-    if value <= 0:
-      raise ValidationError('Job price must be greater than 0')
-
-  @validates('rate')
-  def validate_rate(self, value):
-    if len(value) < 10:
-      raise ValidationError('Job rate must be at least 10 characters long')
-    
-class JobPublicSchema(JobSchema):
-  class Meta(JobSchema.Meta):
-    exclude = ('rate', 'price')
+# class JobPublicSchema(JobSchema):
+#   class Meta(JobSchema.Meta):
+#     exclude = ('rate', 'price')
 
 class ClientSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
@@ -148,6 +137,8 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   email = auto_field(required=True)
   phone = auto_field(required=True)
   notes = auto_field(required=True)
+  # Remove the orders relationship to prevent circular reference
+  # orders = ma.Nested('OrderSchema', many=True, exclude=('client',))
 
   @validates('name')
   def validate_name(self, value):
@@ -155,7 +146,7 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
       raise ValidationError('Client name must be at least 2 characters long')
     if len(value.strip()) > 30:
       raise ValidationError('Client name must be 30 characters or less')
-    # Check if name contains only letters, numbers, spaces, and common punctuation
+    
     import re
     if not re.match(r'^[a-zA-Z0-9\s\-\'\.]+$', value.strip()):
       raise ValidationError('Client name can only contain letters, numbers, spaces, hyphens, apostrophes, and periods')
@@ -168,7 +159,7 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
       raise ValidationError('Email must be at least 5 characters long')
     if len(value) > 60:
       raise ValidationError('Email must be 60 characters or less')
-    # Basic email format validation
+    
     import re
     email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     if not re.match(email_pattern, value):
@@ -178,7 +169,7 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   def validate_phone(self, value):
     if not value:
       raise ValidationError('Phone number is required')
-    # Validate phone format: ###-###-####
+   
     import re
     phone_pattern = r'^\d{3}-\d{3}-\d{4}$'
     if not re.match(phone_pattern, value):
@@ -203,7 +194,6 @@ class OrderSchema(ma.SQLAlchemyAutoSchema):
   start_date = auto_field(required=True)
   status = auto_field(required=True)
 
-  user_id = auto_field(required=True)
   client_id = auto_field(required=True)
   job_id = auto_field(required=True)
 
@@ -215,6 +205,11 @@ class OrderSchema(ma.SQLAlchemyAutoSchema):
   def validate_description(self, value):
     if len(value.strip()) < 5:
       raise ValidationError('Order description must be at least 5 characters long')
+    
+  @validates('rate')
+  def validate_rate(self, value):
+    if len(value) < 10:
+      raise ValidationError('Job rate must be at least 10 characters long')
     
   @validates('location')
   def validate_location(self, value):

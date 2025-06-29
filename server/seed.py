@@ -105,7 +105,8 @@ if __name__ == '__main__':
                 name=client_info["name"],
                 email=client_info["email"],
                 phone=client_info["phone"],
-                notes=client_info["notes"]
+                notes=client_info["notes"],
+                user_id=rc(users).id  # Assign a random user to each client
             )
             clients.append(client)
             db.session.add(client)
@@ -119,69 +120,51 @@ if __name__ == '__main__':
         job_data = [
             {
                 "title": "Web Development",
-                "description": "Full-stack web development including frontend, backend, database design, and deployment. Technologies include React, Node.js, and PostgreSQL.",
-                "rate": "$75 per hour",
-                "duration": "40-80 hours",
-                "price": 4500.00
+                "category": "Technology",
+                "description": "Full-stack web development including frontend, backend, database design, and deployment. Technologies include React, Node.js, and PostgreSQL."
             },
             {
                 "title": "Graphic Design",
-                "description": "Professional graphic design services including logos, branding materials, social media graphics, and print collateral. Adobe Creative Suite expertise required.",
-                "rate": "$50 per hour",
-                "duration": "10-30 hours",
-                "price": 1200.00
+                "category": "Creative",
+                "description": "Professional graphic design services including logos, branding materials, social media graphics, and print collateral. Adobe Creative Suite expertise required."
             },
             {
                 "title": "Digital Marketing",
-                "description": "Comprehensive digital marketing strategy including SEO, social media management, content creation, and email marketing campaigns.",
-                "rate": "$60 per hour",
-                "duration": "20-50 hours",
-                "price": 2100.00
+                "category": "Marketing",
+                "description": "Comprehensive digital marketing strategy including SEO, social media management, content creation, and email marketing campaigns."
             },
             {
                 "title": "Mobile App Development",
-                "description": "Native and cross-platform mobile app development for iOS and Android. Includes UI/UX design, development, testing, and app store submission.",
-                "rate": "$85 per hour",
-                "duration": "60-120 hours",
-                "price": 6800.00
+                "category": "Technology",
+                "description": "Native and cross-platform mobile app development for iOS and Android. Includes UI/UX design, development, testing, and app store submission."
             },
             {
                 "title": "Content Writing",
-                "description": "Professional content writing including blog posts, website copy, marketing materials, and technical documentation. SEO-optimized content creation.",
-                "rate": "$40 per hour",
-                "duration": "5-20 hours",
-                "price": 600.00
+                "category": "Writing",
+                "description": "Professional content writing including blog posts, website copy, marketing materials, and technical documentation. SEO-optimized content creation."
             },
             {
                 "title": "Video Production",
-                "description": "Professional video production including filming, editing, post-production, and distribution. Corporate videos, promotional content, and social media videos.",
-                "rate": "$70 per hour",
-                "duration": "15-40 hours",
-                "price": 1750.00
+                "category": "Media",
+                "description": "Professional video production including filming, editing, post-production, and distribution. Corporate videos, promotional content, and social media videos."
             },
             {
                 "title": "Photography",
-                "description": "Professional photography services including product photography, real estate photography, event coverage, and portrait sessions. High-quality equipment and editing included.",
-                "rate": "$55 per hour",
-                "duration": "2-8 hours",
-                "price": 275.00
+                "category": "Media",
+                "description": "Professional photography services including product photography, real estate photography, event coverage, and portrait sessions. High-quality equipment and editing included."
             },
             {
                 "title": "UI/UX Design",
-                "description": "User interface and user experience design for web and mobile applications. Includes wireframing, prototyping, user research, and usability testing.",
-                "rate": "$65 per hour",
-                "duration": "25-60 hours",
-                "price": 2762.50
+                "category": "Design",
+                "description": "User interface and user experience design for web and mobile applications. Includes wireframing, prototyping, user research, and usability testing."
             }
         ]
         
         for job_info in job_data:
             job = Job(
                 title=job_info["title"],
-                description=job_info["description"],
-                rate=job_info["rate"],
-                duration=job_info["duration"],
-                price=job_info["price"]
+                category=job_info["category"],
+                description=job_info["description"]
             )
             jobs.append(job)
             db.session.add(job)
@@ -197,61 +180,81 @@ if __name__ == '__main__':
                 "description": "Develop a modern e-commerce website with shopping cart functionality, payment integration, and admin dashboard",
                 "location": "Remote work with client meetings in San Francisco, CA",
                 "start_date": date.today() + timedelta(days=5),
-                "status": "pending"
+                "status": "pending",
+                "rate": "$75 per hour",
+                "duration": "40-80 hours"
             },
             {
                 "description": "Create brand identity package including logo design, business cards, letterhead, and brand guidelines",
                 "location": "Client office in New York, NY for initial meeting, then remote work",
                 "start_date": date.today() + timedelta(days=2),
-                "status": "in progress"
+                "status": "in progress",
+                "rate": "$50 per hour",
+                "duration": "10-30 hours"
             },
             {
                 "description": "Implement comprehensive SEO strategy including keyword research, on-page optimization, and content marketing plan",
                 "location": "Fully remote work with weekly video calls",
                 "start_date": date.today() - timedelta(days=10),
-                "status": "completed"
+                "status": "completed",
+                "rate": "$60 per hour",
+                "duration": "20-50 hours"
             },
             {
                 "description": "Build native iOS app for restaurant ordering system with real-time order tracking and payment processing",
                 "location": "Hybrid work - initial meetings in Los Angeles, CA, then remote development",
                 "start_date": date.today() + timedelta(days=15),
-                "status": "pending"
+                "status": "pending",
+                "rate": "$85 per hour",
+                "duration": "60-120 hours"
             },
             {
                 "description": "Write 20 blog posts for tech startup covering industry trends, product updates, and thought leadership content",
                 "location": "Remote work with content review meetings via Zoom",
                 "start_date": date.today() - timedelta(days=5),
-                "status": "in progress"
+                "status": "in progress",
+                "rate": "$40 per hour",
+                "duration": "5-20 hours"
             },
             {
                 "description": "Produce promotional video for new product launch including filming, editing, and post-production effects",
                 "location": "On-site filming in Austin, TX, editing work remote",
                 "start_date": date.today() + timedelta(days=8),
-                "status": "pending"
+                "status": "pending",
+                "rate": "$70 per hour",
+                "duration": "15-40 hours"
             },
             {
                 "description": "Photograph 50 properties for real estate listings including interior, exterior, and aerial drone shots",
                 "location": "Various properties across Miami, FL area",
                 "start_date": date.today() - timedelta(days=3),
-                "status": "completed"
+                "status": "completed",
+                "rate": "$55 per hour",
+                "duration": "2-8 hours"
             },
             {
                 "description": "Design user interface for healthcare patient portal with focus on accessibility and ease of use",
                 "location": "Remote work with stakeholder meetings in Chicago, IL",
                 "start_date": date.today() + timedelta(days=12),
-                "status": "pending"
+                "status": "pending",
+                "rate": "$65 per hour",
+                "duration": "25-60 hours"
             },
             {
                 "description": "Develop WordPress website with custom theme and plugin development for educational institute",
                 "location": "Remote work with training sessions at client location in Seattle, WA",
                 "start_date": date.today() - timedelta(days=20),
-                "status": "completed"
+                "status": "completed",
+                "rate": "$75 per hour",
+                "duration": "40-80 hours"
             },
             {
                 "description": "Create social media marketing campaign including content calendar, graphics, and community management",
                 "location": "Fully remote work with daily communication via Slack",
                 "start_date": date.today() + timedelta(days=1),
-                "status": "in progress"
+                "status": "in progress",
+                "rate": "$60 per hour",
+                "duration": "20-50 hours"
             }
         ]
         
@@ -261,7 +264,8 @@ if __name__ == '__main__':
                 location=order_info["location"],
                 start_date=order_info["start_date"],
                 status=order_info["status"],
-                user_id=rc(users).id,
+                rate=order_info["rate"],
+                duration=order_info["duration"],
                 client_id=rc(clients).id,
                 job_id=rc(jobs).id
             )

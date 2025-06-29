@@ -1,4 +1,4 @@
-.doctors-container {
+.jobs-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);  /* Changed to 3 columns */
   gap: 3rem 3rem;  /* 10rem horizontal gap, 3rem vertical gap */
@@ -7,7 +7,7 @@
   margin: 0 auto;
 }
 
-.doctor-card {
+.job-card {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -21,18 +21,18 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.doctor-card:hover {
+.job-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.doctor-card-content {
+.job-card-content {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.doctor-header {
+.job-header {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -40,7 +40,7 @@
   padding-bottom: 1rem;
 }
 
-.doctor-header h3 {
+.job-header h3 {
   margin: 0;
   color: var(--text-primary);
   font-size: 1.5rem;
@@ -53,7 +53,7 @@
   font-weight: 500;
 }
 
-.doctor-info {
+.job-info {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -95,13 +95,13 @@
   background-color: var(--accent-light);
 }
 
-.doctor-actions {
+.job-actions {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
 }
 
-.doctor-actions a {
+.job-actions a {
   flex: 1;
   text-align: center;
   padding: 0.8rem;

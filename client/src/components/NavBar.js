@@ -18,7 +18,7 @@ const NavBar = () => {
 
   return (
     <nav className="navbar">
-      <h1>DOCTOR'S APPOINTMENTS</h1>
+      <h1>PROFILE PAGE</h1>
       {user && (
         <button className="signout-button" onClick={handleSignOut}>
           Sign Out

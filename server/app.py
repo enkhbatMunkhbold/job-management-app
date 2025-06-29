@@ -3,7 +3,7 @@ from flask_restful import Resource
 from marshmallow.exceptions import ValidationError
 
 from config import app, db, api, ma
-from models import User, Client, Job, Order, UserSchema, ClientSchema, JobSchema, JobPublicSchema, OrderSchema
+from models import User, Client, Job, Order, UserSchema, ClientSchema, JobSchema, OrderSchema
 
 
 user_schema = UserSchema()
@@ -12,8 +12,6 @@ client_schema = ClientSchema()
 clients_schema = ClientSchema(many=True)
 job_schema = JobSchema()
 jobs_schema = JobSchema(many=True)
-job_public_schema = JobPublicSchema()
-jobs_public_schema = JobPublicSchema(many=True)
 order_schema = OrderSchema()
 orders_schema = OrderSchema(many=True)
 
@@ -75,6 +73,8 @@ class CheckSession(Resource):
                 return users_schema.dump(user), 200
             return jsonify({'error': 'Not authenticated'}), 401
         
+api.add_resource(CheckSession, '/check_session')
+
 class Logout(Resource):
     def delete(self):
         session.pop('user_id', None)
@@ -101,14 +101,26 @@ class Clients(Resource):
             return {'error': f'Internal server error: {str(e)}'}, 500
     def post(self):
         try: 
+            user_id = session.get('user_id')
+            if not user_id:
+                return {'error': 'Not authenticated'}, 401
+            
+            user = db.session.get(User, user_id)
+            if not user:
+                return {'error': 'User not found'}, 404
+            
             data = request.get_json()
+            data['user_id'] = user_id  # Set the user_id for the new client
             new_client = client_schema.load(data)
 
-            data.session.add(new_client)
-            data.session.commit()
+            db.session.add(new_client)
+            db.session.commit()
 
             return client_schema.dump(new_client), 201
+        except ValidationError as ve:
+            return {'error': ve.messages}, 400
         except Exception as e:
+            db.session.rollback()
             return ({'error': f'Internal server error: {str(e)}'}), 500
         
 api.add_resource(Clients, '/clients')
@@ -159,29 +171,8 @@ class ClientById(Resource):
     
 api.add_resource(ClientById, '/clients/<int:client_id>')
 
-
 class Jobs(Resource):
     def get(self):
-        jobs = Job.query.all()
-        result = jobs_public_schema.dump(jobs)
-        return result, 200
-    #     try:
-    #         user_id = session.get('user_id')
-    #         if not user_id:
-    #             return {'error': 'Not authenticated'}, 401
-            
-    #         user = db.session.get(User, user_id)
-    #         if not user:
-    #             return {'error': 'User not found'}, 404        
-
-    #         result = jobs_schema.dump(user.jobs)            
-    #         return result, 200
-        
-    #     except Exception as e:
-    #         print(f"Error in Jobs.get(): {str(e)}")
-    #         return {'error': f'Internal server error: {str(e)}'}, 500
-        
-    def post(self):
         try:
             # user_id = session.get('user_id')
             # if not user_id:
@@ -189,14 +180,32 @@ class Jobs(Resource):
             
             # user = db.session.get(User, user_id)
             # if not user:
-            #     return {'error': 'User not found'}, 404
+            #     return {'error': 'User not found'}, 404        
+
+            jobs = Job.query.all()
+            result = jobs_schema.dump(jobs)            
+            return result, 200
+        
+        except Exception as e:
+            print(f"Error in Jobs.get(): {str(e)}")
+            return {'error': f'Internal server error: {str(e)}'}, 500
+        
+    def post(self):
+        try:
+            user_id = session.get('user_id')
+            if not user_id:
+                return {'error': 'Not authenticated'}, 401
+            
+            user = db.session.get(User, user_id)
+            if not user:
+                return {'error': 'User not found'}, 404
             
             data = request.get_json()
             new_job = job_schema.load(data)
 
             db.session.add(new_job)
             db.session.commit()
-            return job_public_schema.dump(new_job), 201
+            return job_schema.dump(new_job), 201
         
         except ValidationError as ve:
             return {'error': ve.messages}, 400
@@ -260,6 +269,14 @@ api.add_resource(JobById, '/jobs/<int:job_id>')
 class Orders(Resource):
     def post(self):
         try:
+            user_id = session.get('user_id')
+            if not user_id:
+                return {'error': 'Not authenticated'}, 401
+            
+            user = db.session.get(User, user_id)
+            if not user:
+                return {'error': 'User not found'}, 404
+            
             data = request.get_json()
             new_order = order_schema.load(data)
 
@@ -270,6 +287,7 @@ class Orders(Resource):
         except ValidationError as ve:
             return {'error': ve.messages}, 400
         except Exception as e:
+            db.session.rollback()
             return {'error': f'Internal server error {str(e)}'}, 500
         
 api.add_resource(Orders, '/orders')
