@@ -11,7 +11,6 @@ class User(db.Model):
   _password_hash = db.Column(db.String, nullable=False)
 
   clients = db.relationship('Client', backref='user', cascade="all, delete", lazy=True)
-  # orders = db.relationship('Order', backref='user', lazy=True)  
   
   def set_password(self, password):
       if len(password) < 8:
@@ -50,7 +49,6 @@ class Job(db.Model):
   description = db.Column(db.Text, nullable=False)
 
   orders = db.relationship('Order', backref='job', cascade='all, delete-orphan', lazy=True, overlaps="clients")
-  # clients = db.relationship('Client', secondary='orders', backref='jobs', lazy='dynamic')
     
   def __repr__(self):
     return f'<Style {self.title}>' 
@@ -75,7 +73,7 @@ class Order(db.Model):
 class UserSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = User
-    load_instance = True
+    load_instance = False  # Ensure @post_load is always called for password hashing
     exclude = ('_password_hash',)
 
   username = auto_field(required=True)
@@ -93,16 +91,22 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
   def validate_fname(self, value):
     if len(value) < 2:
       raise ValidationError('Username must be at least 2 characters long')
-    if not value.isalnum():
-      raise ValidationError('Username must contain only letters and spaces')
+    if not all(c.isalnum() or c.isspace() for c in value):
+      raise ValidationError('Username must contain only letters, numbers, and spaces')
 
   @post_load
   def make_user(self, data, **kwargs):
-    password = data.pop('password', None)
-    user = User(**data)
-    if password:
-      user.set_password(password)
-    return user
+    print('DEBUG make_user called with:', data)
+    if isinstance(data, dict):
+        password = data.pop('password', None)
+        print('DEBUG password extracted:', password)
+        if not password:
+            raise ValidationError("Password is required for registration")
+        user = User(**data)
+        user.set_password(password)
+        print('DEBUG user created:', user)
+        return user
+    return data
   
 class JobSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
@@ -111,8 +115,6 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
 
   title = auto_field(required=True)
   description = auto_field(required=True)
-  # Remove the orders relationship to prevent circular reference
-  # orders = ma.Nested('OrderSchema', many=True, exclude=('job',))
 
   @validates('title')
   def validate_title(self, value):
@@ -123,10 +125,6 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
   def validate_description(self, value):
     if len(value) < 10:
       raise ValidationError('Job description must be at least 10 characters long')  
-    
-# class JobPublicSchema(JobSchema):
-#   class Meta(JobSchema.Meta):
-#     exclude = ('rate', 'price')
 
 class ClientSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
@@ -137,9 +135,7 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   email = auto_field(required=True)
   phone = auto_field(required=True)
   notes = auto_field(required=True)
-  # Remove the orders relationship to prevent circular reference
-  # orders = ma.Nested('OrderSchema', many=True, exclude=('client',))
-
+  
   @validates('name')
   def validate_name(self, value):
     if not value or len(value.strip()) < 2:

@@ -29,8 +29,9 @@ const Home = () => {
     return <JobCard key={job.id} job={job} />
   })
 
-  const capitalizedUsername = user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase()
-
+  const capitalizedUsername = user?.username ? 
+    user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase() : 
+    'User'
 
   return (
     <div>

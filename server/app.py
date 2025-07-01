@@ -23,24 +23,28 @@ class Register(Resource):
     def post(self):
         try: 
             data = request.get_json()
-            if not data or not all(k in data for k in ['username', 'email']):
-                return jsonify({'error': 'Missing required fields'}), 400
+            if not data or not all(k in data for k in ['username', 'email', 'password']):
+                return {'error': 'Missing required fields: username, email, and password are required'}, 400
             
             if User.query.filter_by(email=data['email']).first():
-                return jsonify({'error': 'Email already exists'}), 400
+                return {'error': 'Email already exists'}, 400
+
+            if User.query.filter_by(username=data['username']).first():
+                return {'error': 'Username already exists'}, 400
 
             new_user = user_schema.load(data)
             db.session.add(new_user)
             db.session.commit()
             session['user_id'] = new_user.id
 
-            return users_schema.dump(new_user), 201
+            return user_schema.dump(new_user), 201
         
         except ValidationError as e:
-            return jsonify({'error': str(e)}), 400
+            return {'error': str(e)}, 400
         
         except Exception as e:
-            return jsonify({'error': 'An error occured during registration'}), 500
+            print(f"Registration error: {str(e)}")
+            return {'error': f'An error occurred during registration: {str(e)}'}, 500
         
 api.add_resource(Register, '/register')
 
@@ -49,18 +53,18 @@ class Login(Resource):
         try:
             data = request.get_json()
             if not data or not all(k in data for k in ['username', 'password']):
-                return jsonify({'error': 'Missing required fields'}), 400
+                return {'error': 'Missing required fields'}, 400
             
             user = User.query.filter_by(username=data['username']).first()
 
             if user and user.authenticate(data['password']):
                 session['user_id'] = user.id
-                return users_schema.dump(user), 200
+                return user_schema.dump(user), 200
             
-            return jsonify({'message': 'Invalid credentials'}), 401
+            return {'message': 'Invalid credentials'}, 401
         
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
+            return {'error': str(e)}, 500
 
 api.add_resource(Login, '/login')
 
@@ -70,8 +74,8 @@ class CheckSession(Resource):
         if user_id:
             user = db.session.get(User, user_id)
             if user:
-                return users_schema.dump(user), 200
-            return jsonify({'error': 'Not authenticated'}), 401
+                return user_schema.dump(user), 200
+            return {'error': 'Not authenticated'}, 401
         
 api.add_resource(CheckSession, '/check_session')
 
@@ -110,7 +114,7 @@ class Clients(Resource):
                 return {'error': 'User not found'}, 404
             
             data = request.get_json()
-            data['user_id'] = user_id  # Set the user_id for the new client
+            data['user_id'] = user_id 
             new_client = client_schema.load(data)
 
             db.session.add(new_client)
@@ -174,14 +178,6 @@ api.add_resource(ClientById, '/clients/<int:client_id>')
 class Jobs(Resource):
     def get(self):
         try:
-            # user_id = session.get('user_id')
-            # if not user_id:
-            #     return {'error': 'Not authenticated'}, 401
-            
-            # user = db.session.get(User, user_id)
-            # if not user:
-            #     return {'error': 'User not found'}, 404        
-
             jobs = Job.query.all()
             result = jobs_schema.dump(jobs)            
             return result, 200

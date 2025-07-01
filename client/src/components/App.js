@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import NavBar from "./NavBar";
-import SignUp from "./SignUp";
+import Register from "./Register";
 import Home from "./Home";
 import Login from "./Login";
 import Profile from "./Profile";
@@ -44,10 +44,10 @@ function App() {
         <div className="main-content">
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/home" element={<Home />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/" element={<Navigate to={user ? "/login" : "/signup"} />} />
+            <Route path="/" element={<Navigate to={user ? "/login" : "/register"} />} />
           </Routes>
         </div>
       </Router>

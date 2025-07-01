@@ -9,16 +9,16 @@ const JobCard = ({ job }) => {
           <h3>{job.title}</h3>
           <span className="specialty">{job.description}</span>
         </div>
-        <div className="job-info">
+        {/* <div className="job-info">
           <div className="info-item">
-            <span className="label">Job Type:</span>
+            <span className="label">Job Title:</span>
             <span className="value">{job.title}</span>
           </div>
           <div className="info-item">
             <span className="label">Description:</span>
             <span className="value">{job.description}</span>
           </div>
-        </div>
+        </div> */}
         <div className="job-actions">
           <Link to={`/jobs/${job.id}`} className="view-profile">
             View Details
