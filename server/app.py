@@ -1,10 +1,9 @@
-from flask import request, session, jsonify
+from flask import request, session
 from flask_restful import Resource
 from marshmallow.exceptions import ValidationError
 
-from config import app, db, api, ma
+from config import app, db, api
 from models import User, Client, Job, Order, UserSchema, ClientSchema, JobSchema, OrderSchema
-
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)

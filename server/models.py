@@ -11,6 +11,7 @@ class User(db.Model):
   _password_hash = db.Column(db.String, nullable=False)
 
   clients = db.relationship('Client', backref='user', cascade="all, delete", lazy=True)
+  # jobs = db.relationship('Job', secondary='clients, orders', backref='users', lazy=True, viewonly=True)  # Removed: invalid secondary argument
   
   def set_password(self, password):
       if len(password) < 8:
@@ -35,7 +36,7 @@ class Client(db.Model):
   user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
   
   orders = db.relationship('Order', backref='client', lazy=True)
-  jobs = db.relationship('Job', secondary='orders', viewonly=True)
+  # jobs = db.relationship('Job', secondary='orders', viewonly=True)  # Removed: invalid secondary argument
     
   def __repr__(self):
     return f'<Client {self.name}>'
@@ -48,7 +49,7 @@ class Job(db.Model):
   category = db.Column(db.String(30), nullable=False)
   description = db.Column(db.Text, nullable=False)
 
-  orders = db.relationship('Order', backref='job', cascade='all, delete-orphan', lazy=True, overlaps="clients")
+  orders = db.relationship('Order', backref='job', cascade='all, delete-orphan', lazy=True)
     
   def __repr__(self):
     return f'<Style {self.title}>' 
@@ -61,7 +62,7 @@ class Order(db.Model):
   rate = db.Column(db.String(20), nullable=False)  
   location = db.Column(db.Text, nullable=False)
   start_date = db.Column(db.Date, nullable=False)
-  duration = db.Column(db.String, nullable=False)
+  duration = db.Column(db.String(50), nullable=False)
   status = db.Column(db.String(20), nullable=False, default='pending')
 
   client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
@@ -74,7 +75,6 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = User
     load_instance = False  # Ensure @post_load is always called for password hashing
-    exclude = ('_password_hash',)
 
   username = auto_field(required=True)
   email = auto_field(required=True)
@@ -112,6 +112,7 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = Job
     load_instance = True
+    exclude = ('orders',)
 
   title = auto_field(required=True)
   description = auto_field(required=True)
@@ -130,6 +131,7 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = Client
     load_instance = True
+    exclude = ('orders',)
 
   name = auto_field(required=True)
   email = auto_field(required=True)
@@ -193,7 +195,6 @@ class OrderSchema(ma.SQLAlchemyAutoSchema):
   client_id = auto_field(required=True)
   job_id = auto_field(required=True)
 
-  user = fields.Nested('UserSchema', dump_only=True)
   client = fields.Nested('ClientSchema', dump_only=True)
   job = fields.Nested('JobSchema', dump_only=True)
 
