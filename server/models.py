@@ -2,6 +2,7 @@ from marshmallow import validates, ValidationError, post_load, fields
 from marshmallow_sqlalchemy import auto_field
 from datetime import date
 from config import db, bcrypt, ma
+from sqlalchemy import distinct
 
 class User(db.Model):
   __tablename__ = 'users'
@@ -10,8 +11,18 @@ class User(db.Model):
   email = db.Column(db.String(60), unique=True, nullable=False)
   _password_hash = db.Column(db.String, nullable=False)
 
-  clients = db.relationship('Client', backref='user', cascade="all, delete", lazy=True)
-  # jobs = db.relationship('Job', secondary='clients, orders', backref='users', lazy=True, viewonly=True)  # Removed: invalid secondary argument
+  clients = db.relationship('Client', backref='user', cascade="all, delete")
+
+  @property
+  def jobs(self):
+    return db.session.query(Job).join(Order).join(Client).filter(
+      Client.user_id == self.id
+    ).distinct().all()
+  
+  def get_jobs_query(self):
+    return db.session.query(Job).join(Order).join(Client).filter(
+      Client.user_id == self.id
+    ).distinct()
   
   def set_password(self, password):
       if len(password) < 8:
@@ -35,8 +46,8 @@ class Client(db.Model):
   notes = db.Column(db.Text, nullable=False)
   user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
   
-  orders = db.relationship('Order', backref='client', lazy=True)
-  # jobs = db.relationship('Job', secondary='orders', viewonly=True)  # Removed: invalid secondary argument
+  orders = db.relationship('Order', backref='client')
+  jobs = db.relationship('Job', secondary='orders', viewonly=True)
     
   def __repr__(self):
     return f'<Client {self.name}>'
@@ -49,7 +60,7 @@ class Job(db.Model):
   category = db.Column(db.String(30), nullable=False)
   description = db.Column(db.Text, nullable=False)
 
-  orders = db.relationship('Order', backref='job', cascade='all, delete-orphan', lazy=True)
+  orders = db.relationship('Order', backref='job', cascade='all, delete-orphan')
     
   def __repr__(self):
     return f'<Style {self.title}>' 
@@ -62,7 +73,7 @@ class Order(db.Model):
   rate = db.Column(db.String(20), nullable=False)  
   location = db.Column(db.Text, nullable=False)
   start_date = db.Column(db.Date, nullable=False)
-  duration = db.Column(db.String(50), nullable=False)
+  duration = db.Column(db.String, nullable=False)
   status = db.Column(db.String(20), nullable=False, default='pending')
 
   client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
@@ -75,10 +86,17 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = User
     load_instance = False  # Ensure @post_load is always called for password hashing
+    exclude = ('_password_hash', 'clients')
 
   username = auto_field(required=True)
   email = auto_field(required=True)
   password = fields.String(load_only=True, required=True)
+
+  jobs = fields.Method('get_user_jobs', dump_only=True)
+
+  def get_user_jobs(self, obj):
+    job_schema = JobSchema(exclude=('orders',))
+    return [job_schema.dump(job) for job in obj.jobs]
 
   @validates('email')
   def validate_email(self, value):
@@ -131,7 +149,7 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = Client
     load_instance = True
-    exclude = ('orders',)
+    exclude = ('orders', 'jobs')
 
   name = auto_field(required=True)
   email = auto_field(required=True)

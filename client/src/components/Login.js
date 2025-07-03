@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import UserContext from "../context/UserContext";
 import { Link, useNavigate } from "react-router-dom"
 import { useFormik } from "formik"
@@ -8,6 +8,7 @@ import "../styling/authent.css"
 const Login = () => {
   const navigate = useNavigate()
   const { setUser } = useContext(UserContext)
+  const [ error, setError ] = useState("")
 
   const formik = useFormik({
     initialValues: {
@@ -26,10 +27,20 @@ const Login = () => {
         },
         body: JSON.stringify(values)
       })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(err => {
+            throw new Error(err.message || "Invalid credentials")
+          })
+        }
+        return res.json()
+      })
       .then(user => {
         setUser(user)
         navigate("/profile")
+      })
+      .catch(err => {
+        setError(err.message || 'Invalid credentials')
       })
     }
   });
@@ -38,6 +49,7 @@ const Login = () => {
     <div className="auth-container">      
       <form onSubmit={formik.handleSubmit} className="auth-form">
         <h2>Login</h2>
+        {error && <p className="error-message" style={{ color: 'red' }}>{error}</p>}
         <div className="form-group">
           <input
             type="text"
@@ -48,7 +60,7 @@ const Login = () => {
             onChange={formik.handleChange}
           />
           {formik.touched.username && formik.errors.username ? (
-            <div className="error-message">{formik.errors.username}</div>
+            <p className="error-message" style={{ color: 'red' }}>{formik.errors.username}</p>
           ) : null}
         </div>
         <div className="form-group">
@@ -61,7 +73,7 @@ const Login = () => {
             onChange={formik.handleChange}
           />
           {formik.touched.password && formik.errors.password ? (
-            <div className="error-message">{formik.errors.password}</div>
+            <p className="error-message" style={{ color: 'red' }}>{formik.errors.password}</p>
           ) : null}
         </div>
         <button type="submit">Login</button>

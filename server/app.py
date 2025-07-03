@@ -55,8 +55,15 @@ class Login(Resource):
                 return {'error': 'Missing required fields'}, 400
             
             user = User.query.filter_by(username=data['username']).first()
+            print('DEBUG: user found:', user)
+            if not user:
+                return {'message': 'Invalid credentials'}, 401
 
-            if user and user.authenticate(data['password']):
+            print('DEBUG: user._password_hash:', user._password_hash)
+            if not user._password_hash:
+                return {'message': 'Invalid credentials'}, 401
+
+            if user.authenticate(data['password']):
                 session['user_id'] = user.id
                 return user_schema.dump(user), 200
             
