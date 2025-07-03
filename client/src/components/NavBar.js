@@ -1,10 +1,11 @@
-import { useContext } from 'react'
+import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import UserContext from '../context/UserContext'
 import '../styling/navbar.css'
 
 const NavBar = () => {
   const { user, setUser } = useContext(UserContext)
+  const [ profile, setProfile ] = useState(true)
   const navigate = useNavigate()
 
   const handleSignOut = () => {
@@ -17,8 +18,13 @@ const NavBar = () => {
   }
 
   const handleHome = () => {
-    navigate('/home')
-  }
+    setProfile(!profile)
+    if (profile) {
+      navigate('/profile')
+    } else {
+      navigate('home')
+    }
+   }
 
   return (
     <nav className="navbar">
@@ -26,7 +32,7 @@ const NavBar = () => {
       {user && (
         <div className="nav-buttons">
           <button className="nav-button home-button" onClick={handleHome}>
-            Home
+            {profile ? 'Profile' : 'Home'}
           </button>
           <button className="nav-button signout-button" onClick={handleSignOut}>
             Sign Out

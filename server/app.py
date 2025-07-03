@@ -80,6 +80,8 @@ class CheckSession(Resource):
         if user_id:
             user = db.session.get(User, user_id)
             if user:
+                print(f"DEBUG: User {user.username} has {len(user.clients)} clients")
+                print(f"DEBUG: User {user.username} has {len(user.jobs)} jobs")
                 return user_schema.dump(user), 200
             return {'error': 'Not authenticated'}, 401
         

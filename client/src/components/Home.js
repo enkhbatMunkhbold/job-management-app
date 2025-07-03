@@ -35,7 +35,7 @@ const Home = () => {
 
   return (
     <div>
-      <h1>Welcome, {capitalizedUsername}</h1>
+      <h1>Welcome, {capitalizedUsername}</h1>      
       <div className="jobs-container">
         {jobCards}
       </div>

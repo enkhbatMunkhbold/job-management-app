@@ -86,13 +86,14 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = User
     load_instance = False  # Ensure @post_load is always called for password hashing
-    exclude = ('_password_hash', 'clients')
+    exclude = ('_password_hash',)
 
   username = auto_field(required=True)
   email = auto_field(required=True)
   password = fields.String(load_only=True, required=True)
 
   jobs = fields.Method('get_user_jobs', dump_only=True)
+  clients = fields.Nested('ClientSchema', many=True, dump_only=True)
 
   def get_user_jobs(self, obj):
     job_schema = JobSchema(exclude=('orders',))
