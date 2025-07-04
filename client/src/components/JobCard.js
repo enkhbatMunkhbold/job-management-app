@@ -7,7 +7,6 @@ const JobCard = ({ job, showDetails = false }) => {
       <div className="job-card-content">
         <div className="job-header">
           <h3>{job.title}</h3>
-          {/* <span className="specialty">{job.description}</span> */}
         </div>
         
         {showDetails && (
@@ -22,10 +21,6 @@ const JobCard = ({ job, showDetails = false }) => {
                 <span className="label">Description:</span>
                 <span className="value">{job.description}</span>
               </div>
-              {/* <div className="info-item">
-                <span className="label">Job ID:</span>
-                <span className="value">#{job.id}</span>
-              </div> */}
             </div>
           </>
         )}
@@ -36,9 +31,11 @@ const JobCard = ({ job, showDetails = false }) => {
               View Details
             </Link>
           )}
-          <Link to={`/orders/new?job=${job.id}`} className="book-appointment">
-            Create Order
-          </Link>
+          {!showDetails && (
+            <Link to={`/orders/new?job=${job.id}`} className="book-appointment">
+              Create Order
+            </Link>
+          )}
         </div>
       </div>
     </div>

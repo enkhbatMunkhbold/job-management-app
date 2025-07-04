@@ -26,7 +26,7 @@ const Home = () => {
   }, [])
 
   const jobCards = jobs.map( job => {
-    return <JobCard key={job.id} job={job} />
+    return <JobCard key={job.id} job={job} showDetails={false} />
   })
 
   const capitalizedUsername = user?.username ? 
