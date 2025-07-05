@@ -221,6 +221,14 @@ class Jobs(Resource):
 api.add_resource(Jobs, '/jobs')
 
 class JobById(Resource):
+    def get(self, job_id):
+        job = Job.query.get(job_id)
+
+        if not job:
+            return {'error': 'Job not found'}, 404
+        
+        return job_schema.dump(job), 200
+    
     def delete(self, job_id):
         job = Job.query.get(job_id)
 

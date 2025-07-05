@@ -7,7 +7,6 @@ const ClientCard = ({ client }) => {
         <div className="client-header">
           <h3>{client.name}</h3>
         </div>
-        <hr className="client-divider" />
         <div className="client-info">
           <div className="client-info-title">
             <h4>Client Info</h4>

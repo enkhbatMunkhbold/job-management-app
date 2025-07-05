@@ -2,7 +2,7 @@ from marshmallow import validates, ValidationError, post_load, fields
 from marshmallow_sqlalchemy import auto_field
 from datetime import date
 from config import db, bcrypt, ma
-from sqlalchemy import distinct
+# from sqlalchemy import distinct
 
 class User(db.Model):
   __tablename__ = 'users'

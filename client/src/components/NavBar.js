@@ -5,7 +5,7 @@ import '../styling/navbar.css'
 
 const NavBar = () => {
   const { user, setUser } = useContext(UserContext)
-  const [ profile, setProfile ] = useState(true)
+  const [ profile, setProfile ] = useState(false)
   const navigate = useNavigate()
 
   const handleSignOut = () => {
