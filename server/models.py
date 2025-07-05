@@ -85,7 +85,7 @@ class Order(db.Model):
 class UserSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = User
-    load_instance = False  # Ensure @post_load is always called for password hashing
+    load_instance = False  # @post_load is always called for password hashing
     exclude = ('_password_hash',)
 
   username = auto_field(required=True)
