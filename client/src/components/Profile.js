@@ -31,8 +31,18 @@ const Profile = () => {
     <div className="profile-container">
       <h1 className="profile-header">Welcome, {capitalizedUsername}</h1>
       <div className="profile-buttons">
-        <button className="profile-button" onClick={() => setShowClients(false)}>Show My Jobs</button>
-        <button className="profile-button" onClick={() => setShowClients(true)}>Show My Clients</button>
+        <button 
+          className={`profile-button ${!showClients ? 'active' : ''}`} 
+          onClick={() => setShowClients(false)}
+        >
+          Show My Jobs
+        </button>
+        <button 
+          className={`profile-button ${showClients ? 'active' : ''}`} 
+          onClick={() => setShowClients(true)}
+        >
+          Show My Clients
+        </button>
       </div>
       <div className="jobs-container">
         {showClients ? clientCards : jobCards}

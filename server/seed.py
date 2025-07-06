@@ -121,42 +121,50 @@ if __name__ == '__main__':
             {
                 "title": "Web Development",
                 "category": "Technology",
-                "description": "Full-stack web development including frontend, backend, database design, and deployment. Technologies include React, Node.js, and PostgreSQL."
+                "description": "Full-stack web development including frontend, backend, database design, and deployment. Technologies include React, Node.js, and PostgreSQL.",
+                "duration": "40-80 hours"
             },
             {
                 "title": "Graphic Design",
                 "category": "Creative",
-                "description": "Professional graphic design services including logos, branding materials, social media graphics, and print collateral. Adobe Creative Suite expertise required."
+                "description": "Professional graphic design services including logos, branding materials, social media graphics, and print collateral. Adobe Creative Suite expertise required.",
+                "duration": "10-30 hours"
             },
             {
                 "title": "Digital Marketing",
                 "category": "Marketing",
-                "description": "Comprehensive digital marketing strategy including SEO, social media management, content creation, and email marketing campaigns."
+                "description": "Comprehensive digital marketing strategy including SEO, social media management, content creation, and email marketing campaigns.",
+                "duration": "20-50 hours"
             },
             {
                 "title": "Mobile App Development",
                 "category": "Technology",
-                "description": "Native and cross-platform mobile app development for iOS and Android. Includes UI/UX design, development, testing, and app store submission."
+                "description": "Native and cross-platform mobile app development for iOS and Android. Includes UI/UX design, development, testing, and app store submission.",
+                "duration": "60-120 hours"
             },
             {
                 "title": "Content Writing",
                 "category": "Writing",
-                "description": "Professional content writing including blog posts, website copy, marketing materials, and technical documentation. SEO-optimized content creation."
+                "description": "Professional content writing including blog posts, website copy, marketing materials, and technical documentation. SEO-optimized content creation.",
+                "duration": "5-20 hours"
             },
             {
                 "title": "Video Production",
                 "category": "Media",
-                "description": "Professional video production including filming, editing, post-production, and distribution. Corporate videos, promotional content, and social media videos."
+                "description": "Professional video production including filming, editing, post-production, and distribution. Corporate videos, promotional content, and social media videos.",
+                "duration": "15-40 hours"
             },
             {
                 "title": "Photography",
                 "category": "Media",
-                "description": "Professional photography services including product photography, real estate photography, event coverage, and portrait sessions. High-quality equipment and editing included."
+                "description": "Professional photography services including product photography, real estate photography, event coverage, and portrait sessions. High-quality equipment and editing included.",
+                "duration": "2-8 hours"
             },
             {
                 "title": "UI/UX Design",
                 "category": "Design",
-                "description": "User interface and user experience design for web and mobile applications. Includes wireframing, prototyping, user research, and usability testing."
+                "description": "User interface and user experience design for web and mobile applications. Includes wireframing, prototyping, user research, and usability testing.",
+                "duration": "25-60 hours"
             }
         ]
         
@@ -164,7 +172,8 @@ if __name__ == '__main__':
             job = Job(
                 title=job_info["title"],
                 category=job_info["category"],
-                description=job_info["description"]
+                description=job_info["description"],
+                duration=job_info["duration"]
             )
             jobs.append(job)
             db.session.add(job)
@@ -181,80 +190,70 @@ if __name__ == '__main__':
                 "location": "Remote work with client meetings in San Francisco, CA",
                 "start_date": date.today() + timedelta(days=5),
                 "status": "pending",
-                "rate": "$75 per hour",
-                "duration": "40-80 hours"
+                "rate": "$75 per hour"
             },
             {
                 "description": "Create brand identity package including logo design, business cards, letterhead, and brand guidelines",
                 "location": "Client office in New York, NY for initial meeting, then remote work",
                 "start_date": date.today() + timedelta(days=2),
                 "status": "in progress",
-                "rate": "$50 per hour",
-                "duration": "10-30 hours"
+                "rate": "$50 per hour"
             },
             {
                 "description": "Implement comprehensive SEO strategy including keyword research, on-page optimization, and content marketing plan",
                 "location": "Fully remote work with weekly video calls",
                 "start_date": date.today() - timedelta(days=10),
                 "status": "completed",
-                "rate": "$60 per hour",
-                "duration": "20-50 hours"
+                "rate": "$60 per hour"
             },
             {
                 "description": "Build native iOS app for restaurant ordering system with real-time order tracking and payment processing",
                 "location": "Hybrid work - initial meetings in Los Angeles, CA, then remote development",
                 "start_date": date.today() + timedelta(days=15),
                 "status": "pending",
-                "rate": "$85 per hour",
-                "duration": "60-120 hours"
+                "rate": "$85 per hour"
             },
             {
                 "description": "Write 20 blog posts for tech startup covering industry trends, product updates, and thought leadership content",
                 "location": "Remote work with content review meetings via Zoom",
                 "start_date": date.today() - timedelta(days=5),
                 "status": "in progress",
-                "rate": "$40 per hour",
-                "duration": "5-20 hours"
+                "rate": "$40 per hour"
             },
             {
                 "description": "Produce promotional video for new product launch including filming, editing, and post-production effects",
                 "location": "On-site filming in Austin, TX, editing work remote",
                 "start_date": date.today() + timedelta(days=8),
                 "status": "pending",
-                "rate": "$70 per hour",
-                "duration": "15-40 hours"
+                "rate": "$70 per hour"
             },
             {
                 "description": "Photograph 50 properties for real estate listings including interior, exterior, and aerial drone shots",
                 "location": "Various properties across Miami, FL area",
                 "start_date": date.today() - timedelta(days=3),
                 "status": "completed",
-                "rate": "$55 per hour",
-                "duration": "2-8 hours"
+                "rate": "$55 per hour"
             },
             {
                 "description": "Design user interface for healthcare patient portal with focus on accessibility and ease of use",
                 "location": "Remote work with stakeholder meetings in Chicago, IL",
                 "start_date": date.today() + timedelta(days=12),
                 "status": "pending",
-                "rate": "$65 per hour",
-                "duration": "25-60 hours"
+                "rate": "$65 per hour"
             },
             {
                 "description": "Develop WordPress website with custom theme and plugin development for educational institute",
                 "location": "Remote work with training sessions at client location in Seattle, WA",
                 "start_date": date.today() - timedelta(days=20),
                 "status": "completed",
-                "rate": "$75 per hour",
-                "duration": "40-80 hours"
+                "rate": "$75 per hour"
             },
             {
                 "description": "Create social media marketing campaign including content calendar, graphics, and community management",
                 "location": "Fully remote work with daily communication via Slack",
                 "start_date": date.today() + timedelta(days=1),
                 "status": "in progress",
-                "rate": "$60 per hour",
-                "duration": "20-50 hours"
+                "rate": "$60 per hour"
             }
         ]
         
@@ -265,7 +264,6 @@ if __name__ == '__main__':
                 start_date=order_info["start_date"],
                 status=order_info["status"],
                 rate=order_info["rate"],
-                duration=order_info["duration"],
                 client_id=rc(clients).id,
                 job_id=rc(jobs).id
             )

@@ -59,6 +59,7 @@ class Job(db.Model):
   title = db.Column(db.String(30), nullable=False)
   category = db.Column(db.String(30), nullable=False)
   description = db.Column(db.Text, nullable=False)
+  duration = db.Column(db.String, nullable=False)
 
   orders = db.relationship('Order', backref='job', cascade='all, delete-orphan')
     
@@ -73,7 +74,6 @@ class Order(db.Model):
   rate = db.Column(db.String(20), nullable=False)  
   location = db.Column(db.Text, nullable=False)
   start_date = db.Column(db.Date, nullable=False)
-  duration = db.Column(db.String, nullable=False)
   status = db.Column(db.String(20), nullable=False, default='pending')
 
   client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
@@ -96,8 +96,30 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
   clients = fields.Nested('ClientSchema', many=True, dump_only=True)
 
   def get_user_jobs(self, obj):
-    job_schema = JobSchema(exclude=('orders',))
-    return [job_schema.dump(job) for job in obj.jobs]
+    # Get jobs with their associated clients through orders
+    jobs_with_clients = []
+    for job in obj.jobs:
+      job_data = {
+        'id': job.id,
+        'title': job.title,
+        'category': job.category,
+        'description': job.description,
+        'duration': job.duration,
+        'clients': []
+      }
+      
+      # Get all clients associated with this job through orders
+      for order in job.orders:
+        if order.client.user_id == obj.id:  # Only include clients belonging to this user
+          job_data['clients'].append({
+            'id': order.client.id,
+            'name': order.client.name,
+            'email': order.client.email
+          })
+      
+      jobs_with_clients.append(job_data)
+    
+    return jobs_with_clients
 
   @validates('email')
   def validate_email(self, value):

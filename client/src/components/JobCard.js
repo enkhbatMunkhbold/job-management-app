@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import "../styling/jobCard.css";
 
 const JobCard = ({ job, showDetails = false }) => {
+  console.log("Job from JobCard:", job)
   return (
     <div className={`job-card ${showDetails ? 'job-card-detailed' : ''}`}>
       <div className="job-card-content">
@@ -21,6 +22,25 @@ const JobCard = ({ job, showDetails = false }) => {
                 <span className="label">Description:</span>
                 <span className="value">{job.description}</span>
               </div>
+              {job.duration && (
+                <div className="info-item">
+                  <span className="label">Duration:</span>
+                  <span className="value">{job.duration}</span>
+                </div>
+              )}
+              {job.clients && job.clients.length > 0 && (
+                <div className="info-item">
+                  <span className="label">Clients:</span>
+                  <span className="value">
+                    {job.clients.map((client, index) => (
+                      <span key={client.id}>
+                        {client.name}
+                        {index < job.clients.length - 1 ? ', ' : ''}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+              )}
             </div>
           </>
         )}
@@ -32,7 +52,7 @@ const JobCard = ({ job, showDetails = false }) => {
             </Link>
           )}
           {!showDetails && (
-            <Link to={`/orders/new?job=${job.id}`} className="book-appointment">
+            <Link to={`/new_order?job=${job.id}`} className="book-appointment">
               Create Order
             </Link>
           )}

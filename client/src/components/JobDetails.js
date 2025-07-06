@@ -42,7 +42,6 @@ function JobDetails() {
         <div className="job-details-content">
           <div className="job-details-header">
             <h1>{job.title}</h1>
-            <span className="job-category">{job.category}</span>
           </div>
           
           <div className="job-details-body">
@@ -62,6 +61,10 @@ function JobDetails() {
                   <span className="label">Category:</span>
                   <span className="value">{job.category}</span>
                 </div>
+                <div className="info-item">
+                  <span className="label">Job Length:</span>
+                  <span className="value">{job.duration}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -70,7 +73,7 @@ function JobDetails() {
             <button className="back-button" onClick={() => window.history.back()}>
               Back to Jobs
             </button>
-            <button className="create-order-button" onClick={() => window.location.href = `/orders/new?job=${job.id}`}>
+            <button className="create-order-button" onClick={() => window.location.href = `/new_order?job=${job.id}`}>
               Create Order
             </button>
           </div>
