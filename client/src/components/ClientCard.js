@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "../styling/clientCard.css";
 
 const ClientCard = ({ client }) => {
@@ -24,6 +25,12 @@ const ClientCard = ({ client }) => {
             <span className="label">Notes:</span>
             <span className="value">{client.notes}</span>
           </div>
+        </div>
+        
+        <div className="client-actions">
+          <Link to={`/clients/${client.id}/orders`} className="orders-button">
+            View Orders
+          </Link>
         </div>
       </div>
     </div>

@@ -183,6 +183,41 @@ class ClientById(Resource):
     
 api.add_resource(ClientById, '/clients/<int:client_id>')
 
+class ClientOrders(Resource):
+    def get(self, client_id):
+        try:
+            user_id = session.get('user_id')
+            if not user_id:
+                return {'error': 'Not authenticated'}, 401
+            
+            client = Client.query.get(client_id)
+            if not client:
+                return {'error': 'Client not found'}, 404
+            
+            # Check if the client belongs to the authenticated user
+            if client.user_id != user_id:
+                return {'error': 'Unauthorized access to client'}, 403
+            
+            # Get all orders for this client with job information
+            orders = Order.query.filter_by(client_id=client_id).all()
+            
+            # Serialize orders with job information
+            orders_data = []
+            for order in orders:
+                order_data = order_schema.dump(order)
+                order_data['job'] = job_schema.dump(order.job)
+                orders_data.append(order_data)
+            
+            return {
+                'client': client_schema.dump(client),
+                'orders': orders_data
+            }, 200
+            
+        except Exception as e:
+            return {'error': f'Internal server error: {str(e)}'}, 500
+
+api.add_resource(ClientOrders, '/clients/<int:client_id>/orders')
+
 class Jobs(Resource):
     def get(self):
         try:

@@ -7,6 +7,7 @@ import Login from "./Login";
 import Profile from "./Profile";
 import JobDetails from "./JobDetails";
 import NewOrder from "./NewOrder";
+import OrderList from "./OrderList";
 import UserContext from '../context/UserContext';
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/jobs/:id" element={<JobDetails />} />
+            <Route path="/clients/:clientId/orders" element={<OrderList />} />
             <Route path="/" element={<Navigate to={user ? "/login" : "/register"} />} />
             <Route path="/new_order" element={<NewOrder />} />
           </Routes>

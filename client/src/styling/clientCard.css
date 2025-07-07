@@ -175,6 +175,16 @@
   transform: translateY(-2px);
 }
 
+.orders-button {
+  background-color: var(--text-primary);
+  color: var(--header);
+}
+
+.orders-button:hover {
+  background-color: var(--text-secondary);
+  transform: translateY(-2px);
+}
+
 .client-card-detailed {
   height: auto;
   min-height: 200px;
