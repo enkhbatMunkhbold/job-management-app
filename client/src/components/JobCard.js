@@ -42,6 +42,11 @@ const JobCard = ({ job, showDetails = false }) => {
                 </div>
               )}
             </div>
+            <div className="job-actions">
+              <Link to={`/jobs/${job.id}/orders`} className="orders-button">
+                View Orders
+              </Link>
+            </div>
           </>
         )}
         

@@ -258,13 +258,15 @@ if __name__ == '__main__':
         ]
         
         for order_info in order_data:
+            selected_client = rc(clients)
             order = Order(
                 description=order_info["description"],
                 location=order_info["location"],
                 start_date=order_info["start_date"],
                 status=order_info["status"],
                 rate=order_info["rate"],
-                client_id=rc(clients).id,
+                user_id=selected_client.user_id,  # Use the client's user_id
+                client_id=selected_client.id,
                 job_id=rc(jobs).id
             )
             orders.append(order)

@@ -45,16 +45,25 @@ function App() {
       <Router>
         <NavBar />
         <div className="main-content">
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/jobs/:id" element={<JobDetails />} />
-            <Route path="/clients/:clientId/orders" element={<OrderList />} />
-            <Route path="/" element={<Navigate to={user ? "/login" : "/register"} />} />
-            <Route path="/new_order" element={<NewOrder />} />
-          </Routes>
+          {user ? (
+            <Routes>
+              
+              <Route path="/home" element={<Home />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/jobs/:id" element={<JobDetails />} />
+              <Route path="/clients/:clientId/orders" element={<OrderList />} />              
+              <Route path="/new_order" element={<NewOrder />} />
+              <Route path="*" element={<Navigate to="/home" replace />} />
+            </Routes>
+          ) : (
+            <Routes>
+              <Route path="/" element={<Navigate to={user ? "/login" : "/register"} />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+          )}
+          
         </div>
       </Router>
     </UserContext.Provider>    

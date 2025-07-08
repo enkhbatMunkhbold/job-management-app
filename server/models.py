@@ -76,8 +76,11 @@ class Order(db.Model):
   start_date = db.Column(db.Date, nullable=False)
   status = db.Column(db.String(20), nullable=False, default='pending')
 
+  user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
   client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
   job_id = db.Column(db.Integer, db.ForeignKey('jobs.id'), nullable=False)
+  
+  user = db.relationship('User')
 
   def __repr__(self):
      return f'<Order {self.status}>'
@@ -226,6 +229,7 @@ class OrderSchema(ma.SQLAlchemyAutoSchema):
     model = Order
     load_instance = True
     include_fk = True
+    exclude = ('user',)
 
   id = auto_field(dump_only=True)
   description = auto_field(required=True)
@@ -233,6 +237,7 @@ class OrderSchema(ma.SQLAlchemyAutoSchema):
   start_date = auto_field(required=True)
   status = auto_field(required=True)
 
+  user_id = auto_field(required=True)
   client_id = auto_field(required=True)
   job_id = auto_field(required=True)
 

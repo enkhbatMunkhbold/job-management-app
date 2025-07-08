@@ -314,6 +314,23 @@ class JobById(Resource):
     
 api.add_resource(JobById, '/jobs/<int:job_id>')
 
+class JobOrders(Resource):
+    def get(self, job_id):
+        try:
+            user_id = session.get('user_id')
+            if not user_id:
+                return {'error': 'Not authenticated'}, 401
+
+            job = Job.query.get(job_id)
+            if not job:
+                return {'error': "Job not found"}, 404
+            
+            orders = Order.query.filter_by(job_id=job_id).all()
+            
+        except Exception as e:
+            return {'error': f'Internal server error: {str(e)}'}, 500
+api.add_resource(JobOrders, '/jobs/<int:job_id>/orders')
+
 class Orders(Resource):
     def post(self):
         try:

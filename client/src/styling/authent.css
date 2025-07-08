@@ -52,6 +52,27 @@
   background-color: white;
 }
 
+/* Placeholder styling */
+.form-group input::placeholder {
+  color: rgba(148, 137, 121, 0.6);
+  opacity: 1;
+}
+
+.form-group input::-webkit-input-placeholder {
+  color: rgba(148, 137, 121, 0.6);
+  opacity: 1;
+}
+
+.form-group input::-moz-placeholder {
+  color: rgba(148, 137, 121, 0.6);
+  opacity: 1;
+}
+
+.form-group input:-ms-input-placeholder {
+  color: rgba(148, 137, 121, 0.6);
+  opacity: 1;
+}
+
 .auth-form button {
   background-color: var(--text-primary);
   color: var(--header);
