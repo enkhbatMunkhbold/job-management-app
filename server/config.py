@@ -21,7 +21,7 @@ migrate = Migrate(app, db)
 db.init_app(app)
 
 api = Api(app)
-CORS(app, supports_credentials=True)
+CORS(app)
 bcrypt = Bcrypt(app)
 
 ma = Marshmallow(app)

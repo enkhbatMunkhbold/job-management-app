@@ -84,6 +84,7 @@ class CheckSession(Resource):
                 print(f"DEBUG: User {user.username} has {len(user.jobs)} jobs")
                 return user_schema.dump(user), 200
             return {'error': 'Not authenticated'}, 401
+        return {'error': 'Not authenticated'}, 401
         
 api.add_resource(CheckSession, '/check_session')
 

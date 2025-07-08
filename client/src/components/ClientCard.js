@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import "../styling/clientCard.css";
 
 const ClientCard = ({ client }) => {
-  console.log("Client from ClientCard:", client)
+
   return (
     <div className={`client-card client-card-detailed`}>
       <div className="client-card-content">
