@@ -25,8 +25,20 @@ const ClientCard = ({ client }) => {
             <span className="label">Notes:</span>
             <span className="value">{client.notes}</span>
           </div>
-        </div>
-        
+          {client.jobs && client.jobs.length > 0 && (
+            <div className="=info-item">
+              <span className="labe">Jobs:</span>
+              <span className="value">
+                {client.jobs.map((job, index) => (
+                  <span key={job.id}>
+                    {job.title}
+                    {index < client.jobs.length -1 ? ', ': ''}
+                  </span>
+                ))}
+              </span>
+            </div>
+          )}
+        </div>        
         <div className="client-actions">
           <Link to={`/clients/${client.id}/orders`} className="orders-button">
             View Orders

@@ -3,9 +3,10 @@ import { useParams, Link } from 'react-router-dom'
 import '../styling/orderList.css'
 
 function OrderList() {
-  const { clientId } = useParams()
+  const { clientId, jobId } = useParams()
   const [ orders, setOrders ] = useState([])
   const [ client, setClient ] = useState(null)
+  const [ job, setJob ] = useState(null)
   const [ loading, setLoading ] = useState(true)
   const [ error, setError ] = useState(null)
 
@@ -13,15 +14,28 @@ function OrderList() {
     const fetchOrders = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/clients/${clientId}/orders`)
+        let response
+        let data
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch orders')
+        if (clientId) {
+          // Fetch client orders
+          response = await fetch(`/clients/${clientId}/orders`)
+          if (!response.ok) {
+            throw new Error('Failed to fetch client orders')
+          }
+          data = await response.json()
+          setOrders(data.orders)
+          setClient(data.client)
+        } else if (jobId) {
+          // Fetch job orders
+          response = await fetch(`/jobs/${jobId}/orders`)
+          if (!response.ok) {
+            throw new Error('Failed to fetch job orders')
+          }
+          data = await response.json()
+          setOrders(data.orders)
+          setJob(data.job)
         }
-
-        const data = await response.json()
-        setOrders(data.orders)
-        setClient(data.client)
       } catch (err) {
         setError(err.message)
       } finally {
@@ -29,19 +43,22 @@ function OrderList() {
       }
     }
 
-    if (clientId) {
+    if (clientId || jobId) {
       fetchOrders()
     }
-  }, [clientId])
+  }, [clientId, jobId])
 
   if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="error">Error: {error}</div>
-  if (!client) return <div className="error">Client not found</div>
+  if (!client && !job) return <div className="error">Not found</div>
+
+  const title = client ? `Orders for ${client.name}` : `Orders for ${job.title}`
+  const noOrdersMessage = client ? "No orders found for this client." : "No orders found for this job."
 
   return (
     <div className="order-list-container">
       <div className="order-list-header">
-        <h1>Orders for {client.name}</h1>
+        <h1>{title}</h1>
         <Link to="/profile" className="back-button">
           Back to Profile
         </Link>
@@ -49,7 +66,7 @@ function OrderList() {
       
       {orders.length === 0 ? (
         <div className="no-orders">
-          <p>No orders found for this client.</p>
+          <p>{noOrdersMessage}</p>
         </div>
       ) : (
         <div className="orders-grid">
@@ -78,6 +95,10 @@ function OrderList() {
                 <div className="info-item">
                   <span className="label">Start Date:</span>
                   <span className="value">{new Date(order.start_date).toLocaleDateString()}</span>
+                </div>
+                <div className="info-item">
+                  <span className="label">Client:</span>
+                  <span className="value">{order.client.name}</span>
                 </div>
               </div>
             </div>

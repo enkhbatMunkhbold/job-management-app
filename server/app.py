@@ -325,8 +325,19 @@ class JobOrders(Resource):
             if not job:
                 return {'error': "Job not found"}, 404
             
-            orders = Order.query.filter_by(job_id=job_id).all()
+            orders = Order.query.filter_by(job_id=job_id, user_id=user_id).all()
+
+            orders_data = []
+            for order in orders:
+                order_data = order_schema.dump(order)
+                order_data['client'] = client_schema.dump(order.client)
+                orders_data.append(order_data)
             
+            return {
+                'job': job_schema.dump(job),
+                'orders': orders_data
+            }, 200
+        
         except Exception as e:
             return {'error': f'Internal server error: {str(e)}'}, 500
 api.add_resource(JobOrders, '/jobs/<int:job_id>/orders')
@@ -343,6 +354,8 @@ class Orders(Resource):
                 return {'error': 'User not found'}, 404
             
             data = request.get_json()
+            # Add user_id to the data before loading with schema
+            data['user_id'] = user_id
             new_order = order_schema.load(data)
 
             db.session.add(new_order)

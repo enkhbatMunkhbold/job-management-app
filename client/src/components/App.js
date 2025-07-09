@@ -51,7 +51,8 @@ function App() {
               <Route path="/home" element={<Home />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/jobs/:id" element={<JobDetails />} />
-              <Route path="/clients/:clientId/orders" element={<OrderList />} />              
+              <Route path="/clients/:clientId/orders" element={<OrderList />} />
+              <Route path="/jobs/:jobId/orders" element={<OrderList />} />              
               <Route path="/new_order" element={<NewOrder />} />
               <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>
