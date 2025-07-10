@@ -161,6 +161,35 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
   title = auto_field(required=True)
   description = auto_field(required=True)
 
+  clients = fields.Method('get_job_clients', dump_only=True)
+
+  def get_job_clients(self, obj):
+
+    clients = []
+    for order in obj.orders:
+      client_data = {
+        'id': order.client.id,
+        'name': order.client.name,
+        'email': order.client.email
+      }
+      
+      if client_data not in clients:
+        clients.append(client_data)
+    return clients
+  
+  def get_job_clients_for_user(self, obj, user_id):
+    clients = []
+    for order in obj.orders:
+      if order.client.user_id == user_id:
+        client_data = {
+          'id': order.client.id,
+          'name': order.client.name,
+          'email': order.client.email
+        }
+        if client_data not in clients:
+          clients.append(client_data)
+    return clients
+
   @validates('title')
   def validate_title(self, value):
     if len(value) < 5:
@@ -175,12 +204,30 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = Client
     load_instance = True
-    exclude = ('orders', 'jobs')
+    exclude = ('orders',)
 
   name = auto_field(required=True)
   email = auto_field(required=True)
   phone = auto_field(required=True)
   notes = auto_field(required=True)
+  
+  jobs = fields.Method('get_client_jobs', dump_only=True)
+  
+  def get_client_jobs(self, obj):
+    # Get jobs associated with this client through orders
+    jobs_data = []
+    for order in obj.orders:
+      job_data = {
+        'id': order.job.id,
+        'title': order.job.title,
+        'category': order.job.category,
+        'description': order.job.description,
+        'duration': order.job.duration
+      }
+      
+      if job_data not in jobs_data:
+        jobs_data.append(job_data)
+    return jobs_data
   
   @validates('name')
   def validate_name(self, value):

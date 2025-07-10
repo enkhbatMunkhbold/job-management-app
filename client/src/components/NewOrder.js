@@ -7,7 +7,7 @@ import '../styling/newOrder.css'
 
 const NewOrder = () => {
   const navigate = useNavigate()
-  const { user } = useContext(UserContext)
+  const { user, refreshUser } = useContext(UserContext)
   const [ job, setJob ] = useState({})
   const [ clients, setClients ] = useState([])
   const [ loading, setLoading ] = useState(true)
@@ -96,7 +96,9 @@ const NewOrder = () => {
       })
       .then(data => {
         console.log('Order created successfully:', data)
-        navigate('/profile')
+        refreshUser().then(() => {
+          navigate('/profile')
+        })        
       })
       .catch(err => {
         setError(err.message)
@@ -160,6 +162,7 @@ const NewOrder = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.client_id}
+              placeholder="Select a client"
               className={formik.touched.client_id && formik.errors.client_id ? 'error' : ''}
             >
               <option value="">Select a client</option>

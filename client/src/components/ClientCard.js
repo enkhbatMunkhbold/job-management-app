@@ -3,11 +3,17 @@ import "../styling/clientCard.css";
 
 const ClientCard = ({ client }) => {
 
+  console.log("Client from ClientCard:", client)
+
   return (
     <div className={`client-card client-card-detailed`}>
       <div className="client-card-content">
         <div className="client-header">
-          <h3>{client.name}</h3>
+          <h3>
+            <Link to={`/clients/${client.id}`} className="client-name-link">
+              {client.name}
+            </Link>
+          </h3>
         </div>
         <div className="client-info">
           <div className="client-info-title">
@@ -26,19 +32,22 @@ const ClientCard = ({ client }) => {
             <span className="value">{client.notes}</span>
           </div>
           {client.jobs && client.jobs.length > 0 && (
-            <div className="=info-item">
-              <span className="labe">Jobs:</span>
+            <div className="info-item">
+              <span className="label">Jobs:</span>
               <span className="value">
                 {client.jobs.map((job, index) => (
                   <span key={job.id}>
-                    {job.title}
-                    {index < client.jobs.length -1 ? ', ': ''}
+                    <Link to={`/jobs/${job.id}`} className="job-link">
+                      {job.title}
+                    </Link>
+                    {index < client.jobs.length - 1 ? ', ' : ''}
                   </span>
                 ))}
               </span>
             </div>
           )}
-        </div>        
+        </div>
+        
         <div className="client-actions">
           <Link to={`/clients/${client.id}/orders`} className="orders-button">
             View Orders

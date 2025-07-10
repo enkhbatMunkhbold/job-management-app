@@ -119,6 +119,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .info-item {
@@ -139,6 +140,39 @@
   text-align: right;
   flex: 1;
   word-break: break-word;
+}
+
+.order-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid var(--text-primary);
+}
+
+.delete-button {
+  background-color: #E07B39;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 2px solid #E07B39;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.delete-button:hover:not(:disabled) {
+  background-color: transparent;
+  color: #E07B39;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.delete-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .loading {
@@ -191,5 +225,13 @@
   
   .info-item .value {
     text-align: left;
+  }
+  
+  .order-actions {
+    justify-content: center;
+  }
+  
+  .delete-button {
+    width: 100%;
   }
 } 

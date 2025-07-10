@@ -3,16 +3,16 @@ import { useParams } from 'react-router-dom'
 import '../styling/jobDetails.css'
 
 function JobDetails() {
-  const { id } = useParams()
+  const { jobId } = useParams()
   const [ job, setJob ] = useState(null)
   const [ loading, setLoading ] = useState(true)
   const [ error, setError ] = useState(null)
 
   useEffect(() => {
-    const fetchJobDetails = async (id) => {
+    const fetchJobDetails = async (jobId) => {
       try {
         setLoading(true)
-        const response = await fetch(`/jobs/${id}`)
+        const response = await fetch(`/jobs/${jobId}`)
 
         if(!response.ok) {
           throw new Error('Failed to fetch job details')
@@ -27,10 +27,10 @@ function JobDetails() {
       }
     }
 
-    if (id) {
-      fetchJobDetails(id)
+    if (jobId) {
+      fetchJobDetails(jobId)
     }
-  }, [id])
+  }, [jobId])
 
   if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="error">Error: {error}</div>
@@ -71,7 +71,7 @@ function JobDetails() {
           
           <div className="job-details-actions">
             <button className="back-button" onClick={() => window.history.back()}>
-              Back to Jobs
+              Back to Profile
             </button>
             <button className="create-order-button" onClick={() => window.location.href = `/new_order?job=${job.id}`}>
               Create Order

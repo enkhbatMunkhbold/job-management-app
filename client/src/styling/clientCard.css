@@ -216,4 +216,93 @@
   border: none;
   margin: 0.5rem 0;
   width: 100%;
+}
+
+/* Jobs Section Styles */
+.jobs-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.jobs-title {
+  margin-bottom: 0.8rem;
+}
+
+.jobs-title h4 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, var(--accent-light) 0%, rgba(148, 137, 121, 0.2) 100%);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  text-align: center;
+  border: 1px solid rgba(148, 137, 121, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.jobs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.job-title-item {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--accent-light);
+  transition: all 0.2s ease;
+}
+
+.job-title-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(2px);
+}
+
+/* Job Link Styles */
+.job-link {
+  color: var(--text-secondary);
+  text-decoration: none !important;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.job-link:hover {
+  color: var(--text-primary);
+  text-decoration: none !important;
+}
+
+.job-link:visited {
+  text-decoration: none !important;
+}
+
+.job-link:active {
+  text-decoration: none !important;
+}
+
+/* Client Name Link Styles */
+.client-name-link {
+  color: var(--text-primary);
+  text-decoration: none !important;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.client-name-link:hover {
+  color: var(--accent-light);
+  text-decoration: none !important;
+}
+
+.client-name-link:visited {
+  text-decoration: none !important;
+}
+
+.client-name-link:active {
+  text-decoration: none !important;
 } 

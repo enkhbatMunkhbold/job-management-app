@@ -139,6 +139,25 @@ class Clients(Resource):
 api.add_resource(Clients, '/clients')
 
 class ClientById(Resource):
+    def get(self, client_id):
+        try:
+            user_id = session.get('user_id')
+            if not user_id:
+                return {'error': 'Not authenticated'}, 401
+            
+            client = Client.query.get(client_id)
+            if not client:
+                return {'error': 'Client not found'}, 404
+            
+            # Check if the client belongs to the authenticated user
+            if client.user_id != user_id:
+                return {'error': 'Unauthorized access to client'}, 403
+            
+            return client_schema.dump(client), 200
+            
+        except Exception as e:
+            return {'error': f'Internal server error: {str(e)}'}, 500
+    
     def delete(self, client_id):
         client = Client.query.get(client_id)
 
@@ -372,14 +391,21 @@ api.add_resource(Orders, '/orders')
 
 class OrderById(Resource):
     def delete(self, order_id):
-        order = Order.query.get(order_id)
-
-        if not order:
-            return {'error': 'Order not found'}, 404
-        
-        serialized_order = order_schema.dump(order)
-
         try:
+            user_id = session.get('user_id')
+            if not user_id:
+                return {'error': 'Not authenticated'}, 401
+            
+            order = Order.query.get(order_id)
+            if not order:
+                return {'error': 'Order not found'}, 404
+            
+            # Check if the order belongs to the authenticated user
+            if order.user_id != user_id:
+                return {'error': 'Unauthorized access to order'}, 403
+            
+            serialized_order = order_schema.dump(order)
+
             db.session.delete(order)
             db.session.commit()
 

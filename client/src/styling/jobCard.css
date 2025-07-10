@@ -182,4 +182,25 @@
   border: none;
   margin: 0.5rem 0;
   width: 100%;
+}
+
+/* Client Link Styles */
+.client-link {
+  color: var(--text-secondary);
+  text-decoration: none !important;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.client-link:hover {
+  color: var(--text-primary);
+  text-decoration: none !important;
+}
+
+.client-link:visited {
+  text-decoration: none !important;
+}
+
+.client-link:active {
+  text-decoration: none !important;
 } 
