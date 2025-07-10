@@ -1,9 +1,12 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useContext } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import OrderCard from './OrderCard'
+import UserContext from '../context/UserContext'
 import '../styling/orderList.css'
 
 function OrderList() {
   const { clientId, jobId } = useParams()
+  const { refreshUser } = useContext(UserContext)
   const [ orders, setOrders ] = useState([])
   const [ client, setClient ] = useState(null)
   const [ job, setJob ] = useState(null)
@@ -50,10 +53,6 @@ function OrderList() {
   }, [clientId, jobId, fetchOrders])
 
   const handleDeleteOrder = async (orderId) => {
-    if (!window.confirm('Are you sure you want to delete this order? This action cannot be undone.')) {
-      return
-    }
-
     try {
       setDeletingOrderId(orderId)
       const response = await fetch(`/orders/${orderId}`, {
@@ -67,6 +66,9 @@ function OrderList() {
 
       // Remove the deleted order from the state
       setOrders(orders.filter(order => order.id !== orderId))
+      
+      // Refresh user context to update client/job data in other components
+      await refreshUser()
     } catch (err) {
       setError(err.message)
     } finally {
@@ -97,47 +99,12 @@ function OrderList() {
       ) : (
         <div className="orders-grid">
           {orders.map(order => (
-            <div key={order.id} className="order-card">
-              <div className="order-header">
-                <h3>{order.job.title}</h3>
-                <span className={`status status-${order.status.replace(' ', '-')}`}>
-                  {order.status}
-                </span>
-              </div>
-              
-              <div className="order-info">
-                <div className="info-item">
-                  <span className="label">Description:</span>
-                  <span className="value">{order.description}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">Location:</span>
-                  <span className="value">{order.location}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">Rate:</span>
-                  <span className="value">{order.rate}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">Start Date:</span>
-                  <span className="value">{new Date(order.start_date).toLocaleDateString()}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">Client:</span>
-                  <span className="value">{order.client.name}</span>
-                </div>
-              </div>
-              
-              <div className="order-actions">
-                <button
-                  className="delete-button"
-                  onClick={() => handleDeleteOrder(order.id)}
-                  disabled={deletingOrderId === order.id}
-                >
-                  {deletingOrderId === order.id ? 'Deleting...' : 'Delete Order'}
-                </button>
-              </div>
-            </div>
+            <OrderCard
+              key={order.id}
+              order={order}
+              onDelete={handleDeleteOrder}
+              isDeleting={deletingOrderId === order.id}
+            />
           ))}
         </div>
       )}

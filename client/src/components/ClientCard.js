@@ -3,17 +3,11 @@ import "../styling/clientCard.css";
 
 const ClientCard = ({ client }) => {
 
-  console.log("Client from ClientCard:", client)
-
   return (
     <div className={`client-card client-card-detailed`}>
       <div className="client-card-content">
         <div className="client-header">
-          <h3>
-            <Link to={`/clients/${client.id}`} className="client-name-link">
-              {client.name}
-            </Link>
-          </h3>
+          <h3>{client.name}</h3>
         </div>
         <div className="client-info">
           <div className="client-info-title">

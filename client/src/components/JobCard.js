@@ -2,8 +2,6 @@ import { Link } from "react-router-dom";
 import "../styling/jobCard.css";
 
 const JobCard = ({ job, showDetails = false }) => {
-
-  console.log('Job from JobCard:', job)
  
   return (
     <div className={`job-card ${showDetails ? 'job-card-detailed' : ''}`}>
