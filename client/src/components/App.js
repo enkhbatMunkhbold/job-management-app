@@ -9,10 +9,15 @@ import JobDetails from "./JobDetails";
 import ClientDetails from "./ClientDetails";
 import NewOrder from "./NewOrder";
 import OrderList from "./OrderList";
+import NewJob from "./NewJob";
+import NewClient from "./NewClient";
 import UserContext, { UserProvider } from '../context/UserContext';
 
 function AppContent() { 
   const { user, isLoading } = useContext(UserContext)
+
+  console.log('App - user:', user)
+  console.log('App - isLoading:', isLoading)
 
    if (isLoading) {
     return <div>Loading...</div>;
@@ -32,6 +37,8 @@ function AppContent() {
             <Route path="/clients/:clientId/orders" element={<OrderList />} />
             <Route path="/jobs/:jobId/orders" element={<OrderList />} />              
             <Route path="/new_order" element={<NewOrder />} />
+            <Route path="/new_job" element={<NewJob />} />
+            <Route path="/new_client" element={<NewClient />} />
             <Route path="*" element={<Navigate to="/home" replace />} />
           </Routes>
         ) : (

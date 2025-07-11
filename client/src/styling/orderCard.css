@@ -75,6 +75,11 @@
   flex: 1;
 }
 
+.info-item .value.due-date {
+  color: #e74c3c;
+  font-weight: 500;
+}
+
 .order-actions {
   display: flex;
   gap: 8px;
@@ -99,4 +104,9 @@
 .delete-button:disabled {
   background-color: #6c757d;
   cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.delete-button:disabled:hover {
+  background-color: #6c757d;
 } 

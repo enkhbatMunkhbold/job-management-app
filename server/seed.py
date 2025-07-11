@@ -54,48 +54,64 @@ if __name__ == '__main__':
                 "name": "TechStart Inc.",
                 "email": "contact@techstart.com",
                 "phone": "555-010-1001",
+                "company": "TechStart Inc.",
+                "address": "123 Innovation Drive, San Francisco, CA 94105",
                 "notes": "Startup company looking for web development services. They need a modern, responsive website with e-commerce functionality. Budget is flexible but they prefer cost-effective solutions."
             },
             {
                 "name": "Design Studio Pro",
                 "email": "hello@designstudiopro.com",
                 "phone": "555-010-1002",
+                "company": "Design Studio Pro",
+                "address": "456 Creative Avenue, New York, NY 10001",
                 "notes": "Creative design agency that frequently needs graphic design work. They have ongoing projects and are looking for reliable freelancers who can meet tight deadlines."
             },
             {
                 "name": "Local Restaurant Chain",
                 "email": "manager@localrestaurant.com",
                 "phone": "555-010-1003",
+                "company": "Local Restaurant Chain",
+                "address": "789 Food Street, Austin, TX 73301",
                 "notes": "Family-owned restaurant chain expanding to new locations. They need marketing materials, menu designs, and promotional content. Very particular about brand consistency."
             },
             {
                 "name": "E-commerce Startup",
                 "email": "founder@ecommercestartup.com",
                 "phone": "555-010-1004",
+                "company": "E-commerce Startup",
+                "address": "321 Digital Boulevard, Seattle, WA 98101",
                 "notes": "New e-commerce platform launching soon. Need comprehensive digital marketing strategy, social media management, and content creation. Looking for long-term partnership."
             },
             {
                 "name": "Real Estate Agency",
                 "email": "info@realestateagency.com",
                 "phone": "555-010-1005",
+                "company": "Real Estate Agency",
+                "address": "654 Property Lane, Miami, FL 33101",
                 "notes": "Established real estate agency needing professional photography, virtual tours, and marketing materials for property listings. High volume of work available."
             },
             {
                 "name": "Healthcare Clinic",
                 "email": "admin@healthcareclinic.com",
                 "phone": "555-010-1006",
+                "company": "Healthcare Clinic",
+                "address": "987 Medical Center Drive, Chicago, IL 60601",
                 "notes": "Medical clinic requiring website redesign, patient portal development, and HIPAA-compliant digital solutions. Strict security requirements."
             },
             {
                 "name": "Educational Institute",
                 "email": "contact@eduinst.com",
                 "phone": "555-010-1007",
+                "company": "Educational Institute",
+                "address": "147 Learning Street, Boston, MA 02101",
                 "notes": "Online education platform needing course content creation, video production, and learning management system development. Educational background preferred."
             },
             {
                 "name": "Fitness Center",
                 "email": "hello@fitnesscenter.com",
                 "phone": "555-010-1008",
+                "company": "Fitness Center",
+                "address": "258 Health Avenue, Los Angeles, CA 90001",
                 "notes": "Gym and fitness center looking for mobile app development, social media marketing, and promotional video content. Target audience is health-conscious millennials."
             }
         ]
@@ -105,6 +121,8 @@ if __name__ == '__main__':
                 name=client_info["name"],
                 email=client_info["email"],
                 phone=client_info["phone"],
+                company=client_info["company"],
+                address=client_info["address"],
                 notes=client_info["notes"],
                 user_id=rc(users).id  # Assign a random user to each client
             )
@@ -189,6 +207,7 @@ if __name__ == '__main__':
                 "description": "Develop a modern e-commerce website with shopping cart functionality, payment integration, and admin dashboard",
                 "location": "Remote work with client meetings in San Francisco, CA",
                 "start_date": date.today() + timedelta(days=5),
+                "due_date": date.today() + timedelta(days=45),
                 "status": "pending",
                 "rate": "$75 per hour"
             },
@@ -196,6 +215,7 @@ if __name__ == '__main__':
                 "description": "Create brand identity package including logo design, business cards, letterhead, and brand guidelines",
                 "location": "Client office in New York, NY for initial meeting, then remote work",
                 "start_date": date.today() + timedelta(days=2),
+                "due_date": date.today() + timedelta(days=22),
                 "status": "in progress",
                 "rate": "$50 per hour"
             },
@@ -203,6 +223,7 @@ if __name__ == '__main__':
                 "description": "Implement comprehensive SEO strategy including keyword research, on-page optimization, and content marketing plan",
                 "location": "Fully remote work with weekly video calls",
                 "start_date": date.today() - timedelta(days=10),
+                "due_date": date.today() + timedelta(days=20),
                 "status": "completed",
                 "rate": "$60 per hour"
             },
@@ -210,6 +231,7 @@ if __name__ == '__main__':
                 "description": "Build native iOS app for restaurant ordering system with real-time order tracking and payment processing",
                 "location": "Hybrid work - initial meetings in Los Angeles, CA, then remote development",
                 "start_date": date.today() + timedelta(days=15),
+                "due_date": date.today() + timedelta(days=75),
                 "status": "pending",
                 "rate": "$85 per hour"
             },
@@ -217,6 +239,7 @@ if __name__ == '__main__':
                 "description": "Write 20 blog posts for tech startup covering industry trends, product updates, and thought leadership content",
                 "location": "Remote work with content review meetings via Zoom",
                 "start_date": date.today() - timedelta(days=5),
+                "due_date": date.today() + timedelta(days=15),
                 "status": "in progress",
                 "rate": "$40 per hour"
             },
@@ -224,6 +247,7 @@ if __name__ == '__main__':
                 "description": "Produce promotional video for new product launch including filming, editing, and post-production effects",
                 "location": "On-site filming in Austin, TX, editing work remote",
                 "start_date": date.today() + timedelta(days=8),
+                "due_date": date.today() + timedelta(days=28),
                 "status": "pending",
                 "rate": "$70 per hour"
             },
@@ -231,6 +255,7 @@ if __name__ == '__main__':
                 "description": "Photograph 50 properties for real estate listings including interior, exterior, and aerial drone shots",
                 "location": "Various properties across Miami, FL area",
                 "start_date": date.today() - timedelta(days=3),
+                "due_date": date.today() + timedelta(days=7),
                 "status": "completed",
                 "rate": "$55 per hour"
             },
@@ -238,6 +263,7 @@ if __name__ == '__main__':
                 "description": "Design user interface for healthcare patient portal with focus on accessibility and ease of use",
                 "location": "Remote work with stakeholder meetings in Chicago, IL",
                 "start_date": date.today() + timedelta(days=12),
+                "due_date": date.today() + timedelta(days=42),
                 "status": "pending",
                 "rate": "$65 per hour"
             },
@@ -245,6 +271,7 @@ if __name__ == '__main__':
                 "description": "Develop WordPress website with custom theme and plugin development for educational institute",
                 "location": "Remote work with training sessions at client location in Seattle, WA",
                 "start_date": date.today() - timedelta(days=20),
+                "due_date": date.today() - timedelta(days=5),
                 "status": "completed",
                 "rate": "$75 per hour"
             },
@@ -252,6 +279,7 @@ if __name__ == '__main__':
                 "description": "Create social media marketing campaign including content calendar, graphics, and community management",
                 "location": "Fully remote work with daily communication via Slack",
                 "start_date": date.today() + timedelta(days=1),
+                "due_date": date.today() + timedelta(days=31),
                 "status": "in progress",
                 "rate": "$60 per hour"
             }
@@ -263,6 +291,7 @@ if __name__ == '__main__':
                 description=order_info["description"],
                 location=order_info["location"],
                 start_date=order_info["start_date"],
+                due_date=order_info["due_date"],
                 status=order_info["status"],
                 rate=order_info["rate"],
                 user_id=selected_client.user_id,  # Use the client's user_id

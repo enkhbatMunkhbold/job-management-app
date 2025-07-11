@@ -124,6 +124,16 @@
   border-color: #dc3545;
 }
 
+.form-group input[name="due_date"] {
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+.form-group input[name="due_date"]:focus {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
 .form-group textarea {
   resize: vertical;
   min-height: 50px;

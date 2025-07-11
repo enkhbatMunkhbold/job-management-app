@@ -50,6 +50,7 @@ const NewOrder = () => {
       rate: "",
       location: "",
       start_date: "",
+      due_date: "",
       status: "pending",
       client_id: ""
     },
@@ -66,6 +67,9 @@ const NewOrder = () => {
       start_date: Yup.date()
         .min(new Date(), 'Start date must be in the future')
         .required('Start date is required'),
+      due_date: Yup.date()
+        .min(Yup.ref('start_date'), 'Due date must be after start date')
+        .required('Due date is required'),
       status: Yup.string()
         .oneOf(['pending', 'in progress', 'completed', 'canceled'], 'Invalid status')
         .required('Status is required'),
@@ -241,6 +245,23 @@ const NewOrder = () => {
             />
             {formik.touched.start_date && formik.errors.start_date && (
               <div className="error-message">{formik.errors.start_date}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="due_date">Due Date *</label>
+            <input
+              type="date"
+              id="due_date"
+              name="due_date"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.due_date}
+              min={formik.values.start_date || new Date().toISOString().split('T')[0]}
+              className={formik.touched.due_date && formik.errors.due_date ? 'error' : ''}
+            />
+            {formik.touched.due_date && formik.errors.due_date && (
+              <div className="error-message">{formik.errors.due_date}</div>
             )}
           </div>
 

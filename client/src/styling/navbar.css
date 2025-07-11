@@ -71,6 +71,31 @@
   transform: translateY(0);
 }
 
+.home_button {
+  background-color: transparent;
+  color: var(--header);
+  border: 2px solid var(--header);
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  text-decoration: none;
+}
+
+.home_button:hover {
+  background-color: var(--header);
+  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.home_button:active {
+  transform: translateY(0);
+}
+
 link, .signout-button {
   background-color: transparent;
   color: var(--header);

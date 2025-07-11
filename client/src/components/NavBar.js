@@ -8,6 +8,9 @@ const NavBar = () => {
   const [ profile, setProfile ] = useState(true)
   const navigate = useNavigate()
 
+  console.log('NavBar - user:', user)
+  console.log('NavBar - profile state:', profile)
+
   const handleSignOut = () => {
     fetch('/logout', {
       method: 'DELETE',
@@ -22,7 +25,7 @@ const NavBar = () => {
     if (profile) {
       navigate('/profile')
     } else {
-      navigate('home')
+      navigate('/home')
     }
    }
 
@@ -31,7 +34,7 @@ const NavBar = () => {
       <h1>JOB MANAGEMENT APP</h1>
       {user && (
         <div className="nav-buttons">
-          <button className="nav-button home-button" onClick={handleHome}>
+          <button className="nav-button home_button" onClick={handleHome}>
             {profile ? 'Profile' : 'Home'}
           </button>
           <button className="nav-button signout-button" onClick={handleSignOut}>

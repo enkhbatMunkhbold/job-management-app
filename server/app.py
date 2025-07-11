@@ -306,13 +306,10 @@ class JobById(Resource):
             if not job:
                 return {'error': 'Job not found'}, 404
             
-            # Get all orders for this job that belong to the current user
             user_orders = Order.query.filter_by(job_id=job_id, user_id=user_id).all()
             
             if not user_orders:
                 return {'error': 'No orders found for this job'}, 404
-            
-            # Check if any of these orders are not in pending status
             for order in user_orders:
                 if order.status == 'in progress':
                     return {'error': 'Cannot remove job with active orders!'}, 400
@@ -320,7 +317,6 @@ class JobById(Resource):
             serialized_job = job_schema.dump(job)
 
             try:
-                # Delete only the orders associated with this user and job
                 for order in user_orders:
                     db.session.delete(order)
                 

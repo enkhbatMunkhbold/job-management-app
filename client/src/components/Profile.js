@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import UserContext from '../context/UserContext'
 import JobCard from './JobCard'
@@ -10,11 +10,24 @@ const Profile = () => {
   const navigate = useNavigate()
   const { user, refreshUser } = useContext(UserContext)
   const [ showClients, setShowClients ] = useState(false)
+  const [ showCreateOptions, setShowCreateOptions ] = useState(false)
+  const createButtonRef = useRef(null)
 
-  if (!user) {
-    navigate('/login')
-    return
-  }
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (createButtonRef.current && !createButtonRef.current.contains(event.target)) {
+        setShowCreateOptions(false)
+      }
+    }
+
+    if (showCreateOptions) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showCreateOptions])
 
   const handleDeleteJob = async (jobId) => {
     try {
@@ -33,6 +46,11 @@ const Profile = () => {
       console.error('Error deleting job:', err)
       alert('Failed to delete job: ' + err.message)
     }
+  }
+
+   if (!user) {
+    navigate('/login')
+    return
   }
 
   const handleDeleteClient = async (clientId) => {
@@ -65,6 +83,18 @@ const Profile = () => {
   const capitalizedUsername = user?.username ? 
     user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase() : 'User'
 
+  const handleCreateClick = () => {
+    setShowCreateOptions(!showCreateOptions)
+  }
+
+  const handleCreateJob = () => {
+    navigate('/new-job')
+  }
+
+  const handleCreateClient = () => {
+    navigate('/new-client')
+  }
+
   return (
     <div className="profile-container">
       <h1 className="profile-header">Welcome, {capitalizedUsername}</h1>
@@ -81,6 +111,30 @@ const Profile = () => {
         >
           Show My Clients
         </button>
+        <div className="create-button-container" ref={createButtonRef}>
+          <button 
+            className={`profile-button ${showCreateOptions ? 'active' : ''}`}
+            onClick={handleCreateClick}
+          >
+            Create
+          </button>
+          {showCreateOptions && (
+            <div className="create-options">
+              <button 
+                className="create-option"
+                onClick={handleCreateJob}
+              >
+                New Job
+              </button>
+              <button 
+                className="create-option"
+                onClick={handleCreateClient}
+              >
+                New Client
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       <div className="jobs-container">
         {showClients ? clientCards : jobCards}

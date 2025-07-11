@@ -1,9 +1,11 @@
 import { useEffect, useState, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 import UserContext from '../context/UserContext'
 import JobCard from './JobCard'
 import '../styling/jobCard.css'
 
 const Home = () => {
+  const navigate = useNavigate()
   const { user } = useContext(UserContext)
   const [ jobs, setJobs ] = useState([])
 
@@ -34,8 +36,16 @@ const Home = () => {
     'User'
 
   return (
-    <div>
-      <h1>Welcome, {capitalizedUsername}</h1>      
+    <div className="home-container">
+      <h1 className="home-header">Welcome, {capitalizedUsername}</h1>
+      <div className="home-buttons">
+        <button 
+          onClick={() => navigate('/new_job')} 
+          className="home-button"
+        >
+          Create New Job
+        </button>
+      </div>      
       <div className="jobs-container">
         {jobCards}
       </div>

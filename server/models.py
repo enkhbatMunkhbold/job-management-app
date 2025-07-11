@@ -43,6 +43,8 @@ class Client(db.Model):
   name = db.Column(db.String(30), nullable=False)
   email = db.Column(db.String(60), unique=True, nullable=False)
   phone = db.Column(db.String(12), nullable=False) 
+  company = db.Column(db.String(100), nullable=True)
+  address = db.Column(db.Text, nullable=True)
   notes = db.Column(db.Text, nullable=False)
   user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
   
@@ -74,6 +76,7 @@ class Order(db.Model):
   rate = db.Column(db.String(20), nullable=False)  
   location = db.Column(db.Text, nullable=False)
   start_date = db.Column(db.Date, nullable=False)
+  due_date = db.Column(db.Date, nullable = False)
   status = db.Column(db.String(20), nullable=False, default='pending')
 
   user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -209,6 +212,8 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   name = auto_field(required=True)
   email = auto_field(required=True)
   phone = auto_field(required=True)
+  company = auto_field(required=False)
+  address = auto_field(required=False)
   notes = auto_field(required=True)
   
   jobs = fields.Method('get_client_jobs', dump_only=True)
@@ -282,6 +287,7 @@ class OrderSchema(ma.SQLAlchemyAutoSchema):
   description = auto_field(required=True)
   location = auto_field(required=True)
   start_date = auto_field(required=True)
+  due_date = auto_field(required=True)
   status = auto_field(required=True)
 
   user_id = auto_field(required=True)
@@ -316,3 +322,9 @@ class OrderSchema(ma.SQLAlchemyAutoSchema):
   def validate_start_date(self, value):
     if value < date.today():
       raise ValidationError('Start date must be in the future')
+    
+  @validates('due_date')
+  def validate_due_date(self, value):
+    if value <= date.today():
+      raise ValidationError("Due date can't be today or before today")
+

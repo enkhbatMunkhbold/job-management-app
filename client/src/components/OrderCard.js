@@ -28,6 +28,10 @@ const OrderCard = ({ order, onDelete, isDeleting }) => {
           <span className="value">{new Date(order.start_date).toLocaleDateString()}</span>
         </div>
         <div className="info-item">
+          <span className="label">Due Date:</span>
+          <span className="value due-date">{new Date(order.due_date).toLocaleDateString()}</span>
+        </div>
+        <div className="info-item">
           <span className="label">Client:</span>
           <span className="value">{order.client.name}</span>
         </div>
@@ -37,7 +41,7 @@ const OrderCard = ({ order, onDelete, isDeleting }) => {
         <button
           className="delete-button"
           onClick={() => onDelete(order.id)}
-          disabled={isDeleting}
+          disabled={isDeleting || order.status === 'in progress'}
         >
           {isDeleting ? 'Deleting...' : 'Delete Order'}
         </button>
