@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "../styling/jobCard.css";
 
-const JobCard = ({ job, showDetails = false }) => {
+const JobCard = ({ job, showDetails = false, onDelete }) => {
  
   return (
     <div className={`job-card ${showDetails ? 'job-card-detailed' : ''}`}>
@@ -11,9 +11,11 @@ const JobCard = ({ job, showDetails = false }) => {
         </div>
         
         {showDetails && (
-          <>
-            <hr className="job-divider" />
+          <>            
             <div className="job-info">
+              <div className="job-info-title">
+                <h4>Job Info</h4>
+              </div>
               <div className="info-item">
                 <span className="label">Category:</span>
                 <span className="value">{job.category}</span>
@@ -48,6 +50,13 @@ const JobCard = ({ job, showDetails = false }) => {
               <Link to={`/jobs/${job.id}/orders`} className="orders-button">
                 View Orders
               </Link>
+              <button 
+                className="delete-button"
+                onClick={() => onDelete && onDelete(job.id)}
+                title="Delete Job"
+              >
+                🗑️
+              </button>
             </div>
           </>
         )}

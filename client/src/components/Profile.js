@@ -8,7 +8,7 @@ import '../styling/profile.css'
 
 const Profile = () => {
   const navigate = useNavigate()
-  const { user } = useContext(UserContext)
+  const { user, refreshUser } = useContext(UserContext)
   const [ showClients, setShowClients ] = useState(false)
 
   if (!user) {
@@ -16,12 +16,50 @@ const Profile = () => {
     return
   }
 
+  const handleDeleteJob = async (jobId) => {
+    try {
+      const response = await fetch(`/jobs/${jobId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to delete job')
+      }
+
+      // Refresh user context to update the UI
+      await refreshUser()
+    } catch (err) {
+      console.error('Error deleting job:', err)
+      alert('Failed to delete job: ' + err.message)
+    }
+  }
+
+  const handleDeleteClient = async (clientId) => {
+    try {
+      const response = await fetch(`/clients/${clientId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to delete client')
+      }
+
+      // Refresh user context to update the UI
+      await refreshUser()
+    } catch (err) {
+      console.error('Error deleting client:', err)
+      alert('Failed to delete client: ' + err.message)
+    }
+  }
+
   const jobCards = user.jobs.map( job => {
-    return <JobCard key={job.id} job={job} showDetails={true} />
+    return <JobCard key={job.id} job={job} showDetails={true} onDelete={handleDeleteJob} />
   })
 
   const clientCards = user.clients.map( client => {
-    return <ClientCard key={client.id} client={client} />
+    return <ClientCard key={client.id} client={client} onDelete={handleDeleteClient} />
   })
 
   const capitalizedUsername = user?.username ? 

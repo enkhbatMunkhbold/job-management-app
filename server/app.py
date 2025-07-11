@@ -159,25 +159,37 @@ class ClientById(Resource):
             return {'error': f'Internal server error: {str(e)}'}, 500
     
     def delete(self, client_id):
-        client = Client.query.get(client_id)
-
-        if not client:
-            return {'error': 'Client not found'}, 404
-        
-        if client.orders:
-            return {'error': 'Cannot delete client with existing order!'}, 400
-        
-        serialized_client = client_schema.dump(client)  
-        try:      
-            db.session.delete(client)
-            db.session.commit()
-            return {
-                'message': 'Client deleted successfully',
-                'deleted_client': serialized_client
-            }, 200
-        
+        try:
+            user_id = session.get('user_id')
+            if not user_id:
+                return {'error': 'Not authenticated'}, 401
+            
+            client = Client.query.get(client_id)
+            if not client:
+                return {'error': 'Client not found'}, 404
+            
+            # Check if the client belongs to the authenticated user
+            if client.user_id != user_id:
+                return {'error': 'Unauthorized access to client'}, 403
+            
+            if client.orders:
+                return {'error': 'Cannot delete client with existing order!'}, 400
+            
+            serialized_client = client_schema.dump(client)  
+            try:      
+                db.session.delete(client)
+                db.session.commit()
+                return {
+                    'message': 'Client deleted successfully',
+                    'deleted_client': serialized_client
+                }, 200
+            
+            except Exception as e:
+                db.session.rollback()
+                return {'error': f'Internal server error {str(e)}'}, 500
+                
         except Exception as e:
-            return {'error': f'Internal server error {str(e)}'}, 500
+            return {'error': f'Internal server error: {str(e)}'}, 500
     
     def patch(self, client_id):        
         client = Client.query.get(client_id)
@@ -285,28 +297,46 @@ class JobById(Resource):
         return job_schema.dump(job), 200
     
     def delete(self, job_id):
-        job = Job.query.get(job_id)
-
-        if not job:
-            return {'error': 'Job not found'}, 404
-        
-        if job.orders:
-            return {'error': 'Cannot delete job with existing order!'}, 400
-        
-        serialized_job = job_schema.dump(job)
-
         try:
-            db.session.delete(job)
-            db.session.commit()
+            user_id = session.get('user_id')
+            if not user_id:
+                return {'error': 'Not authenticated'}, 401
+            
+            job = Job.query.get(job_id)
+            if not job:
+                return {'error': 'Job not found'}, 404
+            
+            # Get all orders for this job that belong to the current user
+            user_orders = Order.query.filter_by(job_id=job_id, user_id=user_id).all()
+            
+            if not user_orders:
+                return {'error': 'No orders found for this job'}, 404
+            
+            # Check if any of these orders are not in pending status
+            for order in user_orders:
+                if order.status == 'in progress':
+                    return {'error': 'Cannot remove job with active orders!'}, 400
+            
+            serialized_job = job_schema.dump(job)
 
-            return {
-                'message': 'Job deleted successfully',
-                'deleted_job': serialized_job
-            }, 200
-        
+            try:
+                # Delete only the orders associated with this user and job
+                for order in user_orders:
+                    db.session.delete(order)
+                
+                db.session.commit()
+
+                return {
+                    'message': 'Job removed from user successfully',
+                    'removed_job': serialized_job
+                }, 200
+            
+            except Exception as e:
+                db.session.rollback()
+                return {'error': f'Internal server error {str(e)}'}, 500
+                
         except Exception as e:
-            db.session.rollback()
-            return {'error': f'Internal server error {str(e)}'}, 500
+            return {'error': f'Internal server error: {str(e)}'}, 500
     
     def patch(self, job_id):
         job = Job.query.get(job_id)

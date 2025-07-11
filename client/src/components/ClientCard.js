@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import UserContext from "../context/UserContext";
 import "../styling/clientCard.css";
 
-const ClientCard = ({ client }) => {
+const ClientCard = ({ client, onDelete }) => {
 
   return (
     <div className={`client-card client-card-detailed`}>
@@ -46,6 +48,13 @@ const ClientCard = ({ client }) => {
           <Link to={`/clients/${client.id}/orders`} className="orders-button">
             View Orders
           </Link>
+          <button 
+            className="delete-button"
+            onClick={() => onDelete && onDelete(client.id)}
+            title="Delete Client"
+          >
+            🗑️
+          </button>
         </div>
       </div>
     </div>
