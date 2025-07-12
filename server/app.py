@@ -123,6 +123,7 @@ class Clients(Resource):
                 return {'error': 'User not found'}, 404
             
             data = request.get_json()
+            print(f"Received client data: {data}")
             data['user_id'] = user_id 
             new_client = client_schema.load(data)
 
@@ -131,6 +132,7 @@ class Clients(Resource):
 
             return client_schema.dump(new_client), 201
         except ValidationError as ve:
+            print(f"Validation error: {ve.messages}")
             return {'error': ve.messages}, 400
         except Exception as e:
             db.session.rollback()
@@ -272,6 +274,7 @@ class Jobs(Resource):
                 return {'error': 'User not found'}, 404
             
             data = request.get_json()
+            print(f"Received job data: {data}")
             new_job = job_schema.load(data)
 
             db.session.add(new_job)
@@ -279,6 +282,7 @@ class Jobs(Resource):
             return job_schema.dump(new_job), 201
         
         except ValidationError as ve:
+            print(f"Validation error: {ve.messages}")
             return {'error': ve.messages}, 400
         
         except Exception as e:

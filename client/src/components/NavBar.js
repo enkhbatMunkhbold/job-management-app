@@ -8,12 +8,10 @@ const NavBar = () => {
   const [ profile, setProfile ] = useState(true)
   const navigate = useNavigate()
 
-  console.log('NavBar - user:', user)
-  console.log('NavBar - profile state:', profile)
-
   const handleSignOut = () => {
     fetch('/logout', {
       method: 'DELETE',
+      credentials: 'include',
     }).then(() => {
       setUser(null)
       navigate('/login')

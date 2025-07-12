@@ -58,8 +58,8 @@ class Job(db.Model):
   __tablename__ = 'jobs'
 
   id = db.Column(db.Integer, primary_key=True)
-  title = db.Column(db.String(30), nullable=False)
-  category = db.Column(db.String(30), nullable=False)
+  title = db.Column(db.String(50), nullable=False)
+  category = db.Column(db.String(50), nullable=False)
   description = db.Column(db.Text, nullable=False)
   duration = db.Column(db.String, nullable=False)
 
@@ -162,7 +162,9 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
     exclude = ('orders',)
 
   title = auto_field(required=True)
+  category = auto_field(required=True)
   description = auto_field(required=True)
+  duration = auto_field(required=True)
 
   clients = fields.Method('get_job_clients', dump_only=True)
 
@@ -215,6 +217,7 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   company = auto_field(required=False)
   address = auto_field(required=False)
   notes = auto_field(required=True)
+  user_id = auto_field(required=True)
   
   jobs = fields.Method('get_client_jobs', dump_only=True)
   

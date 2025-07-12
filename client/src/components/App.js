@@ -16,9 +16,6 @@ import UserContext, { UserProvider } from '../context/UserContext';
 function AppContent() { 
   const { user, isLoading } = useContext(UserContext)
 
-  console.log('App - user:', user)
-  console.log('App - isLoading:', isLoading)
-
    if (isLoading) {
     return <div>Loading...</div>;
   }

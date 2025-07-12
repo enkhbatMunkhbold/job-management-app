@@ -7,7 +7,9 @@ export const UserProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/check_session")
+    fetch("/check_session", {
+      credentials: 'include'
+    })
       .then((r) => {
         if (r.ok) {
           return r.json().then(user => {
@@ -30,7 +32,9 @@ export const UserProvider = ({ children }) => {
 
   const refreshUser = async () => {
     try {
-      const response = await fetch("/check_session");
+      const response = await fetch("/check_session", {
+        credentials: 'include'
+      });
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);

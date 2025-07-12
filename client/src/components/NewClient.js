@@ -21,15 +21,16 @@ const NewClient = () => {
     validationSchema: Yup.object({
       name: Yup.string()
         .min(2, 'Name must be at least 2 characters')
-        .max(100, 'Name must be less than 100 characters')
+        .max(30, 'Name must be 30 characters or less')
+        .matches(/^[a-zA-Z0-9\s\-'\.]+$/, 'Name can only contain letters, numbers, spaces, hyphens, apostrophes, and periods')
         .required('Name is required'),
       email: Yup.string()
         .email('Invalid email format')
-        .max(100, 'Email must be less than 100 characters')
+        .min(5, 'Email must be at least 5 characters')
+        .max(60, 'Email must be 60 characters or less')
         .required('Email is required'),
       phone: Yup.string()
-        .min(10, 'Phone must be at least 10 characters')
-        .max(20, 'Phone must be less than 20 characters')
+        .matches(/^\d{3}-\d{3}-\d{4}$/, 'Phone must be in format: ###-###-####')
         .required('Phone is required'),
       company: Yup.string()
         .min(2, 'Company must be at least 2 characters')
@@ -38,8 +39,9 @@ const NewClient = () => {
         .min(5, 'Address must be at least 5 characters')
         .max(200, 'Address must be less than 200 characters'),
       notes: Yup.string()
-        .min(5, 'Notes must be at least 5 characters')
-        .max(300, 'Notes must be less than 300 characters')
+        .min(20, 'Notes must be at least 20 characters')
+        .max(1000, 'Notes must be 1000 characters or less')
+        .required('Notes is required')
     }),
     onSubmit: (values) => {
       fetch('/clients', {
@@ -52,7 +54,22 @@ const NewClient = () => {
       .then(res => {
         if (!res.ok) {
           return res.json().then(err => {
-            throw new Error(err.error || 'Failed to create client')
+            // Handle different error formats
+            let errorMessage = 'Failed to create client'
+            if (err.error) {
+              errorMessage = err.error
+            } else if (typeof err === 'string') {
+              errorMessage = err
+            } else if (err && typeof err === 'object') {
+              // If it's a validation error object, extract the first error
+              const firstError = Object.values(err)[0]
+              if (Array.isArray(firstError)) {
+                errorMessage = firstError[0]
+              } else if (typeof firstError === 'string') {
+                errorMessage = firstError
+              }
+            }
+            throw new Error(errorMessage)
           })
         }
         return res.json()
@@ -124,7 +141,7 @@ const NewClient = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.phone}
-              placeholder="Enter phone number..."
+              placeholder="Enter phone number (###-###-####)..."
               className={formik.touched.phone && formik.errors.phone ? 'error' : ''}
             />
             {formik.touched.phone && formik.errors.phone && (
@@ -166,14 +183,14 @@ const NewClient = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="notes">Notes</label>
+            <label htmlFor="notes">Notes *</label>
             <textarea
               id="notes"
               name="notes"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.notes}
-              placeholder="Add any additional notes about the client..."
+              placeholder="Add detailed notes about the client (minimum 20 characters)..."
               className={formik.touched.notes && formik.errors.notes ? 'error' : ''}
             />
             {formik.touched.notes && formik.errors.notes && (

@@ -14,41 +14,53 @@ const NewJob = () => {
       title: "",
       description: "",
       category: "",
-      duration: "",
-      requirements: ""
+      duration: ""
     },
     validationSchema: Yup.object({
       title: Yup.string()
-        .min(3, 'Title must be at least 3 characters')
-        .max(100, 'Title must be less than 100 characters')
+        .min(5, 'Title must be at least 5 characters')
+        .max(50, 'Title must be 50 characters or less')
         .required('Title is required'),
       description: Yup.string()
         .min(10, 'Description must be at least 10 characters')
-        .max(500, 'Description must be less than 500 characters')
         .required('Description is required'),
       category: Yup.string()
         .min(2, 'Category must be at least 2 characters')
-        .max(50, 'Category must be less than 50 characters')
+        .max(50, 'Category must be 50 characters or less')
         .required('Category is required'),
       duration: Yup.string()
-        .min(2, 'Duration must be at least 2 characters')
-        .max(50, 'Duration must be less than 50 characters'),
-      requirements: Yup.string()
-        .min(5, 'Requirements must be at least 5 characters')
-        .max(300, 'Requirements must be less than 300 characters')
+        .min(1, 'Duration is required')
+        .required('Duration is required')
     }),
     onSubmit: (values) => {
+      console.log('Submitting job data:', values)
       fetch('/jobs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(values)
       })
       .then(res => {
         if (!res.ok) {
           return res.json().then(err => {
-            throw new Error(err.error || 'Failed to create job')
+            // Handle different error formats
+            let errorMessage = 'Failed to create job'
+            if (err.error) {
+              errorMessage = err.error
+            } else if (typeof err === 'string') {
+              errorMessage = err
+            } else if (err && typeof err === 'object') {
+              // If it's a validation error object, extract the first error
+              const firstError = Object.values(err)[0]
+              if (Array.isArray(firstError)) {
+                errorMessage = firstError[0]
+              } else if (typeof firstError === 'string') {
+                errorMessage = firstError
+              }
+            }
+            throw new Error(errorMessage)
           })
         }
         return res.json()
@@ -61,7 +73,21 @@ const NewJob = () => {
       })
       .catch(err => {
         console.error('Error creating job:', err)
-        alert('Failed to create job: ' + err.message)
+        console.error('Error details:', err)
+        
+        // Try to extract more detailed error information
+        let errorMessage = 'Failed to create job'
+        if (err.message) {
+          errorMessage = err.message
+        } else if (err.error) {
+          errorMessage = err.error
+        } else if (typeof err === 'object') {
+          // Log the full error object for debugging
+          console.error('Full error object:', JSON.stringify(err, null, 2))
+          errorMessage = 'Validation error occurred. Please check all fields.'
+        }
+        
+        alert('Failed to create job: ' + errorMessage)
       })
     }
   })
@@ -128,7 +154,7 @@ const NewJob = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="duration">Duration</label>
+            <label htmlFor="duration">Duration *</label>
             <input
               type="text"
               id="duration"
@@ -144,21 +170,7 @@ const NewJob = () => {
             )}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="requirements">Requirements</label>
-            <textarea
-              id="requirements"
-              name="requirements"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.requirements}
-              placeholder="List any specific requirements or qualifications..."
-              className={formik.touched.requirements && formik.errors.requirements ? 'error' : ''}
-            />
-            {formik.touched.requirements && formik.errors.requirements && (
-              <div className="error-message">{formik.errors.requirements}</div>
-            )}
-          </div>
+
 
           <div className="form-actions">
             <button type="button" onClick={() => navigate('/profile')} className="cancel-button">

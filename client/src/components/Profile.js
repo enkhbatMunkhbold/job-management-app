@@ -88,11 +88,11 @@ const Profile = () => {
   }
 
   const handleCreateJob = () => {
-    navigate('/new-job')
+    navigate('/new_job')
   }
 
   const handleCreateClient = () => {
-    navigate('/new-client')
+    navigate('/new_client')
   }
 
   return (
