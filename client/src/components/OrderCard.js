@@ -1,13 +1,22 @@
 import "../styling/orderCard.css";
 
-const OrderCard = ({ order, onDelete, isDeleting }) => {
+const OrderCard = ({ order, onDelete, isDeleting, onEdit }) => {
   return (
     <div className="order-card">
       <div className="order-header">
         <h3>{order.job.title}</h3>
-        <span className={`status status-${order.status.replace(' ', '-')}`}>
-          {order.status}
-        </span>
+        <div className="header-actions">
+          <span className={`status status-${order.status.replace(' ', '-')}`}>
+            {order.status}
+          </span>
+          <button 
+            className="edit-button"
+            onClick={() => onEdit && onEdit(order)}
+            title="Edit Order"
+          >
+            ✏️
+          </button>
+        </div>
       </div>
       
       <div className="order-info">

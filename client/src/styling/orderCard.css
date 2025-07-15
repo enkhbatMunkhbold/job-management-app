@@ -14,7 +14,7 @@
 .order-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 16px;
 }
 
@@ -23,6 +23,45 @@
   color: #333;
   font-size: 1.2rem;
   font-weight: 600;
+  flex: 1;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-button {
+  background-color: transparent;
+  color: rgba(148, 137, 121, 0.4);
+  border: 1px solid rgba(148, 137, 121, 0.3);
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.8);
+}
+
+.order-card:hover .edit-button {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+.edit-button:hover {
+  background-color: transparent;
+  color: rgba(148, 137, 121, 0.6);
+  border-color: rgba(148, 137, 121, 0.5);
+  transform: scale(1.1);
 }
 
 .status {
@@ -87,7 +126,7 @@
 }
 
 .delete-button {
-  background-color: #dc3545;
+  background-color: var(--text-primary);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -98,7 +137,7 @@
 }
 
 .delete-button:hover:not(:disabled) {
-  background-color: #c82333;
+  background-color: var(--text-secondary);
 }
 
 .delete-button:disabled {

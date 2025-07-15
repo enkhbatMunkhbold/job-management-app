@@ -11,6 +11,9 @@ import NewOrder from "./NewOrder";
 import OrderList from "./OrderList";
 import NewJob from "./NewJob";
 import NewClient from "./NewClient";
+import EditJob from "./EditJob";
+import EditClient from "./EditClient";
+import EditOrder from "./EditOrder";
 import UserContext, { UserProvider } from '../context/UserContext';
 import { JobsProvider } from '../context/JobsContext';
 
@@ -36,6 +39,9 @@ function AppContent() {
             <Route path="/new_order" element={<NewOrder />} />
             <Route path="/new_job" element={<NewJob />} />
             <Route path="/new_client" element={<NewClient />} />
+            <Route path="/edit_job/:jobId" element={<EditJob />} />
+            <Route path="/edit_client/:clientId" element={<EditClient />} />
+            <Route path="/edit_order/:orderId" element={<EditOrder />} />
             <Route path="*" element={<Navigate to="/home" replace />} />
           </Routes>
         ) : (

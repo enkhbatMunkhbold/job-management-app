@@ -8,10 +8,6 @@ function ClientDetails() {
   const { user, isLoading } = useContext(UserContext)
   const [ client, setClient ] = useState(null)
   const [ error, setError ] = useState(null)
-
-  console.log('User from ClientDetails:', user)
-  console.log("client ID:", parseInt(clientId))
-  console.log("user.clients:", user?.clients)
   
   useEffect(() => {
     if (user && user.clients && clientId) {
@@ -29,8 +25,6 @@ function ClientDetails() {
       setClient(null)
     }
   }, [user, user?.clients, clientId])
-
-  console.log('Client from ClientDetails:', client)
 
   if (isLoading) return <div className="loading">Loading...</div>
   if (error) return <div className="error">Error: {error}</div>

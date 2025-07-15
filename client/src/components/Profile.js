@@ -68,20 +68,13 @@ const Profile = () => {
     }
   }
 
-  // Use user.jobs instead of global jobs to show only user's jobs
-  const userJobs = user.jobs || []
-  const jobCards = userJobs.map( job => {
-    return <JobCard key={job.id} job={job} showDetails={true} onDelete={handleDeleteJob} />
-  })
+  const handleEditJob = (job) => {
+    navigate(`/edit_job/${job.id}`)
+  }
 
-  // Use user.clients instead of ClientsContext
-  const userClients = user.clients || []
-  const clientCards = userClients.map( client => {
-    return <ClientCard key={client.id} client={client} onDelete={handleDeleteClient} />
-  })
-
-  const capitalizedUsername = user?.username ? 
-    user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase() : 'User'
+  const handleEditClient = (client) => {
+    navigate(`/edit_client/${client.id}`)
+  }
 
   const handleCreateClick = () => {
     setShowCreateOptions(!showCreateOptions)
@@ -94,6 +87,21 @@ const Profile = () => {
   const handleCreateClient = () => {
     navigate('/new_client')
   }
+
+  // Use user.jobs instead of global jobs to show only user's jobs
+  const userJobs = user.jobs || []
+  const jobCards = userJobs.map( job => {
+    return <JobCard key={job.id} job={job} showDetails={true} onDelete={handleDeleteJob} onEdit={handleEditJob} />
+  })
+
+  // Use user.clients instead of ClientsContext
+  const userClients = user.clients || []
+  const clientCards = userClients.map( client => {
+    return <ClientCard key={client.id} client={client} onDelete={handleDeleteClient} onEdit={handleEditClient} />
+  })
+
+  const capitalizedUsername = user?.username ? 
+    user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase() : 'User'
 
   return (
     <div className="profile-container">

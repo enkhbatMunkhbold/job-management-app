@@ -76,6 +76,11 @@ function OrderList() {
     }
   }
 
+  const handleEditOrder = (order) => {
+    // Navigate to edit order page
+    window.location.href = `/edit_order/${order.id}`
+  }
+
   if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="error">Error: {error}</div>
   if (!client && !job) return <div className="error">Not found</div>
@@ -104,6 +109,7 @@ function OrderList() {
               order={order}
               onDelete={handleDeleteOrder}
               isDeleting={deletingOrderId === order.id}
+              onEdit={handleEditOrder}
             />
           ))}
         </div>

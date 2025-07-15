@@ -423,6 +423,54 @@ class Orders(Resource):
 api.add_resource(Orders, '/orders')
 
 class OrderById(Resource):
+    def get(self, order_id):
+        try:
+            user_id = session.get('user_id')
+            if not user_id:
+                return {'error': 'Not authenticated'}, 401
+            
+            order = Order.query.get(order_id)
+            if not order:
+                return {'error': 'Order not found'}, 404
+            
+            # Check if the order belongs to the authenticated user
+            if order.user_id != user_id:
+                return {'error': 'Unauthorized access to order'}, 403
+            
+            return order_schema.dump(order), 200
+            
+        except Exception as e:
+            return {'error': f'Internal server error: {str(e)}'}, 500
+    
+    def patch(self, order_id):
+        try:
+            user_id = session.get('user_id')
+            if not user_id:
+                return {'error': 'Not authenticated'}, 401
+            
+            order = Order.query.get(order_id)
+            if not order:
+                return {'error': 'Order not found'}, 404
+            
+            # Check if the order belongs to the authenticated user
+            if order.user_id != user_id:
+                return {'error': 'Unauthorized access to order'}, 403
+            
+            data = request.get_json()
+            if not data:
+                return {'error': 'No data provided'}, 400
+
+            updated_order = order_schema.load(data, instance=order, partial=True)
+            db.session.commit()
+
+            return order_schema.dump(updated_order), 200
+
+        except ValidationError as ve:
+            return {'error': ve.messages}, 400
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Internal server error: {str(e)}'}, 500
+    
     def delete(self, order_id):
         try:
             user_id = session.get('user_id')

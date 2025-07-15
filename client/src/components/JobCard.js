@@ -1,13 +1,20 @@
 import { Link } from "react-router-dom";
 import "../styling/jobCard.css";
 
-const JobCard = ({ job, showDetails = false, onDelete }) => {
+const JobCard = ({ job, showDetails = false, onDelete, onEdit }) => {
  
   return (
     <div className={`job-card ${showDetails ? 'job-card-detailed' : ''}`}>
       <div className="job-card-content">
         <div className="job-header">
           <h3>{job.title}</h3>
+          <button 
+            className="edit-button"
+            onClick={() => onEdit && onEdit(job)}
+            title="Edit Job"
+          >
+            ✏️
+          </button>
         </div>
         
         {showDetails && (

@@ -1,13 +1,20 @@
 import { Link } from "react-router-dom";
 import "../styling/clientCard.css";
 
-const ClientCard = ({ client, onDelete }) => {
+const ClientCard = ({ client, onDelete, onEdit }) => {
 
   return (
     <div className={`client-card client-card-detailed`}>
       <div className="client-card-content">
         <div className="client-header">
           <h3>{client.name}</h3>
+          <button 
+            className="edit-button"
+            onClick={() => onEdit && onEdit(client)}
+            title="Edit Client"
+          >
+            ✏️
+          </button>
         </div>
         <div className="client-info">
           <div className="client-info-title">

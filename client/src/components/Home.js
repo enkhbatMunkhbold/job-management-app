@@ -10,8 +10,12 @@ const Home = () => {
   const { user } = useContext(UserContext)
   const { jobs, isLoading } = useContext(JobsContext)
 
+  const handleEditJob = (job) => {
+    navigate(`/edit_job/${job.id}`)
+  }
+
   const jobCards = jobs.map( job => {
-    return <JobCard key={job.id} job={job} showDetails={false} />
+    return <JobCard key={job.id} job={job} showDetails={false} onEdit={handleEditJob} />
   })
 
   const capitalizedUsername = user?.username ? 
