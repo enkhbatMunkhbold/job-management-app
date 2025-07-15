@@ -1,31 +1,14 @@
-import { useEffect, useState, useContext } from 'react'
+import { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import UserContext from '../context/UserContext'
+import JobsContext from '../context/JobsContext'
 import JobCard from './JobCard'
 import '../styling/jobCard.css'
 
 const Home = () => {
   const navigate = useNavigate()
   const { user } = useContext(UserContext)
-  const [ jobs, setJobs ] = useState([])
-
-  useEffect(() => {
-    fetch('/jobs')
-    .then(res => {
-      if (res.ok) {
-        res.json().then(data => {
-          setJobs(data)
-        })
-      } else {
-        console.error("Error fetching jobs:", res.statusText)
-        setJobs([])
-      }
-    })
-    .catch(error => {
-      console.error("Error fetching list of jobs:", error)
-      setJobs([])
-    })
-  }, [])
+  const { jobs, isLoading } = useContext(JobsContext)
 
   const jobCards = jobs.map( job => {
     return <JobCard key={job.id} job={job} showDetails={false} />
@@ -34,6 +17,10 @@ const Home = () => {
   const capitalizedUsername = user?.username ? 
     user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase() : 
     'User'
+
+  if (isLoading) {
+    return <div className="loading">Loading jobs...</div>
+  }
 
   return (
     <div className="home-container">

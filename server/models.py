@@ -12,17 +12,24 @@ class User(db.Model):
   _password_hash = db.Column(db.String, nullable=False)
 
   clients = db.relationship('Client', backref='user', cascade="all, delete")
+  orders = db.relationship('Order', backref='user', cascade="all, delete")
+  jobs = db.relationship('Job', 
+                          secondary='orders', 
+                          primaryjoin='User.id == Order.user_id',
+                          secondaryjoin='Job.id == Order.job_id',
+                          viewonly=True)
 
-  @property
-  def jobs(self):
-    return db.session.query(Job).join(Order).join(Client).filter(
-      Client.user_id == self.id
-    ).distinct().all()
+
+  # @property
+  # def jobs(self):
+  #   return db.session.query(Job).join(Order).join(Client).filter(
+  #     Client.user_id == self.id
+  #   ).distinct().all()
   
-  def get_jobs_query(self):
-    return db.session.query(Job).join(Order).join(Client).filter(
-      Client.user_id == self.id
-    ).distinct()
+  # def get_jobs_query(self):
+  #   return db.session.query(Job).join(Order).join(Client).filter(
+  #     Client.user_id == self.id
+  #   ).distinct()
   
   def set_password(self, password):
       if len(password) < 8:
@@ -41,7 +48,7 @@ class Client(db.Model):
   
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(30), nullable=False)
-  email = db.Column(db.String(60), unique=True, nullable=False)
+  email = db.Column(db.String(60), nullable=False)
   phone = db.Column(db.String(12), nullable=False) 
   company = db.Column(db.String(100), nullable=True)
   address = db.Column(db.Text, nullable=True)
@@ -83,7 +90,7 @@ class Order(db.Model):
   client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
   job_id = db.Column(db.Integer, db.ForeignKey('jobs.id'), nullable=False)
   
-  user = db.relationship('User')
+  # user = db.relationship('User')
 
   def __repr__(self):
      return f'<Order {self.status}>'
@@ -102,7 +109,6 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
   clients = fields.Nested('ClientSchema', many=True, dump_only=True)
 
   def get_user_jobs(self, obj):
-    # Get jobs with their associated clients through orders
     jobs_with_clients = []
     for job in obj.jobs:
       job_data = {
@@ -114,9 +120,8 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         'clients': []
       }
       
-      # Get all clients associated with this job through orders
       for order in job.orders:
-        if order.client.user_id == obj.id:  # Only include clients belonging to this user
+        if order.client.user_id == obj.id:  
           job_data['clients'].append({
             'id': order.client.id,
             'name': order.client.name,
@@ -128,14 +133,14 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     return jobs_with_clients
 
   @validates('email')
-  def validate_email(self, value):
+  def validate_email(self, value, **kargs):
     if '@' not in value or '.' not in value:
       raise ValidationError('Invalid email format')
     if len(value) < 5:
       raise ValidationError('Email must be at least 5 characters long')
 
   @validates('username')
-  def validate_fname(self, value):
+  def validate_username(self, value, **kwargs):
     if len(value) < 2:
       raise ValidationError('Username must be at least 2 characters long')
     if not all(c.isalnum() or c.isspace() for c in value):
@@ -196,12 +201,12 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
     return clients
 
   @validates('title')
-  def validate_title(self, value):
+  def validate_title(self, value, **kwargs):
     if len(value) < 5:
       raise ValidationError('Job title must be at least 5 characters long')
 
   @validates('description')
-  def validate_description(self, value):
+  def validate_description(self, value, **kwargs):
     if len(value) < 10:
       raise ValidationError('Job description must be at least 10 characters long')  
 
@@ -209,7 +214,6 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = Client
     load_instance = True
-    exclude = ('orders',)
 
   name = auto_field(required=True)
   email = auto_field(required=True)
@@ -222,23 +226,24 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
   jobs = fields.Method('get_client_jobs', dump_only=True)
   
   def get_client_jobs(self, obj):
-    # Get jobs associated with this client through orders
     jobs_data = []
-    for order in obj.orders:
-      job_data = {
-        'id': order.job.id,
-        'title': order.job.title,
-        'category': order.job.category,
-        'description': order.job.description,
-        'duration': order.job.duration
-      }
-      
-      if job_data not in jobs_data:
-        jobs_data.append(job_data)
+    if hasattr(obj, 'orders') and obj.orders:
+      for order in obj.orders:
+        if hasattr(order, 'job') and order.job:
+          job_data = {
+            'id': order.job.id,
+            'title': order.job.title,
+            'category': order.job.category,
+            'description': order.job.description,
+            'duration': order.job.duration
+          }
+          
+          if job_data not in jobs_data:
+            jobs_data.append(job_data)
     return jobs_data
   
   @validates('name')
-  def validate_name(self, value):
+  def validate_name(self, value, **kwargs):
     if not value or len(value.strip()) < 2:
       raise ValidationError('Client name must be at least 2 characters long')
     if len(value.strip()) > 30:
@@ -249,13 +254,11 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
       raise ValidationError('Client name can only contain letters, numbers, spaces, hyphens, apostrophes, and periods')
     
   @validates('email')
-  def validate_email(self, value):
+  def validate_email(self, value, **kwargs):
     if not value or '@' not in value or '.' not in value:
       raise ValidationError('Invalid email format')
     if len(value) < 5:
       raise ValidationError('Email must be at least 5 characters long')
-    if len(value) > 60:
-      raise ValidationError('Email must be 60 characters or less')
     
     import re
     email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
@@ -263,7 +266,7 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
       raise ValidationError('Invalid email format')
     
   @validates('phone')
-  def validate_phone(self, value):
+  def validate_phone(self, value, **kwargs):
     if not value:
       raise ValidationError('Phone number is required')
    
@@ -273,7 +276,7 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
       raise ValidationError('Phone number must be in format: ###-###-####')
     
   @validates('notes')
-  def validate_notes(self, value):
+  def validate_notes(self, value, **kwargs):
     if not value or len(value.strip()) < 20:
       raise ValidationError('Client notes must be at least 20 characters long')
     if len(value.strip()) > 1000:
@@ -301,33 +304,33 @@ class OrderSchema(ma.SQLAlchemyAutoSchema):
   job = fields.Nested('JobSchema', dump_only=True)
 
   @validates('description')
-  def validate_description(self, value):
+  def validate_description(self, value, **kwargs):
     if len(value.strip()) < 5:
       raise ValidationError('Order description must be at least 5 characters long')
     
   @validates('rate')
-  def validate_rate(self, value):
+  def validate_rate(self, value, **kwargs):
     if len(value) < 10:
       raise ValidationError('Job rate must be at least 10 characters long')
     
   @validates('location')
-  def validate_location(self, value):
+  def validate_location(self, value, **kwargs):
     if len(value.strip()) < 10:
       raise ValidationError('Order location must be at least 10 characters long')
     
   @validates('status')
-  def validate_status(self, value):
+  def validate_status(self, value, **kwargs):
     allowed_statuses = ['pending', 'in progress', 'completed', 'canceled']
     if value.lower() not in allowed_statuses:
       raise ValidationError(f"Status must be one of: {', '.join(allowed_statuses)}")
     
   @validates('start_date')
-  def validate_start_date(self, value):
+  def validate_start_date(self, value, **kwargs):
     if value < date.today():
       raise ValidationError('Start date must be in the future')
     
   @validates('due_date')
-  def validate_due_date(self, value):
+  def validate_due_date(self, value, **kwargs):
     if value <= date.today():
       raise ValidationError("Due date can't be today or before today")
 

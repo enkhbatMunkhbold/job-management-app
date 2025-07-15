@@ -1,40 +1,30 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { useParams } from 'react-router-dom'
+import JobsContext from '../context/JobsContext'
 import '../styling/jobDetails.css'
 
 function JobDetails() {
   const { jobId } = useParams()
+  const { jobs, isLoading } = useContext(JobsContext)
   const [ job, setJob ] = useState(null)
-  const [ loading, setLoading ] = useState(true)
   const [ error, setError ] = useState(null)
 
   useEffect(() => {
-    const fetchJobDetails = async (jobId) => {
-      try {
-        setLoading(true)
-        const response = await fetch(`/jobs/${jobId}`)
-
-        if(!response.ok) {
-          throw new Error('Failed to fetch job details')
-        }
-
-        const jobData = await response.json()
-        setJob(jobData)
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
+    if (jobs && jobId) {
+      const foundJob = jobs.find(job => job.id === parseInt(jobId))
+      if (foundJob) {
+        setJob(foundJob)
+        setError(null)
+      } else {
+        setError('Job not found')
+        setJob(null)
       }
     }
+  }, [jobs, jobId])
 
-    if (jobId) {
-      fetchJobDetails(jobId)
-    }
-  }, [jobId])
-
-  if (loading) return <div className="loading">Loading...</div>
+  if (isLoading) return <div className="loading">Loading...</div>
   if (error) return <div className="error">Error: {error}</div>
-  if (!job) return <div className="error">Job not found</div>
+  if (!job) return <div className="loading">Loading job details...</div>
 
   return (
     <div className="job-details-container">
@@ -53,10 +43,6 @@ function JobDetails() {
             <div className="job-section">
               <h3>Job Information</h3>
               <div className="job-info-grid">
-                <div className="info-item">
-                  <span className="label">Job ID:</span>
-                  <span className="value">{job.id}</span>
-                </div>
                 <div className="info-item">
                   <span className="label">Category:</span>
                   <span className="value">{job.category}</span>

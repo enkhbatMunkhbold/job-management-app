@@ -1,13 +1,13 @@
 import { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import UserContext from '../context/UserContext'
+import JobsContext from '../context/JobsContext'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import '../styling/newJob.css'
 
 const NewJob = () => {
   const navigate = useNavigate()
-  const { refreshUser } = useContext(UserContext)
+  const { createJob } = useContext(JobsContext)
 
   const formik = useFormik({
     initialValues: {
@@ -32,63 +32,23 @@ const NewJob = () => {
         .min(1, 'Duration is required')
         .required('Duration is required')
     }),
-    onSubmit: (values) => {
-      console.log('Submitting job data:', values)
-      fetch('/jobs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(values)
-      })
-      .then(res => {
-        if (!res.ok) {
-          return res.json().then(err => {
-            // Handle different error formats
-            let errorMessage = 'Failed to create job'
-            if (err.error) {
-              errorMessage = err.error
-            } else if (typeof err === 'string') {
-              errorMessage = err
-            } else if (err && typeof err === 'object') {
-              // If it's a validation error object, extract the first error
-              const firstError = Object.values(err)[0]
-              if (Array.isArray(firstError)) {
-                errorMessage = firstError[0]
-              } else if (typeof firstError === 'string') {
-                errorMessage = firstError
-              }
-            }
-            throw new Error(errorMessage)
-          })
-        }
-        return res.json()
-      })
-      .then(data => {
-        console.log('Job created successfully:', data)
-        refreshUser().then(() => {
-          navigate('/profile')
-        })        
-      })
-      .catch(err => {
-        console.error('Error creating job:', err)
-        console.error('Error details:', err)
-        
-        // Try to extract more detailed error information
+    onSubmit: async (values) => {
+      try {
+        console.log('Submitting job data:', values)
+        await createJob(values)
+        console.log('Job created successfully')
+        navigate('/profile')
+      } catch (err) {
         let errorMessage = 'Failed to create job'
         if (err.message) {
           errorMessage = err.message
         } else if (err.error) {
           errorMessage = err.error
         } else if (typeof err === 'object') {
-          // Log the full error object for debugging
-          console.error('Full error object:', JSON.stringify(err, null, 2))
           errorMessage = 'Validation error occurred. Please check all fields.'
-        }
-        
+        }        
         alert('Failed to create job: ' + errorMessage)
-      })
+      }
     }
   })
 

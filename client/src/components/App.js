@@ -12,6 +12,7 @@ import OrderList from "./OrderList";
 import NewJob from "./NewJob";
 import NewClient from "./NewClient";
 import UserContext, { UserProvider } from '../context/UserContext';
+import { JobsProvider } from '../context/JobsContext';
 
 function AppContent() { 
   const { user, isLoading } = useContext(UserContext)
@@ -25,8 +26,7 @@ function AppContent() {
       <NavBar />
       <div className="main-content">
         {user ? (
-          <Routes>
-            
+          <Routes>            
             <Route path="/home" element={<Home />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/jobs/:jobId" element={<JobDetails />} />
@@ -45,8 +45,7 @@ function AppContent() {
             <Route path="/register" element={<Register />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
-        )}
-        
+        )}        
       </div>
     </Router>       
   )
@@ -55,7 +54,9 @@ function AppContent() {
 function App() {
   return (
     <UserProvider>
-      <AppContent />
+      <JobsProvider>
+        <AppContent />
+      </JobsProvider>
     </UserProvider>
   )
 }

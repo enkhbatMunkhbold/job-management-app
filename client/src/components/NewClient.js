@@ -22,7 +22,7 @@ const NewClient = () => {
       name: Yup.string()
         .min(2, 'Name must be at least 2 characters')
         .max(30, 'Name must be 30 characters or less')
-        .matches(/^[a-zA-Z0-9\s\-'\.]+$/, 'Name can only contain letters, numbers, spaces, hyphens, apostrophes, and periods')
+        .matches(/^[a-zA-Z0-9\s\-']+$/, 'Name can only contain letters, numbers, spaces, hyphens, apostrophes, and periods')
         .required('Name is required'),
       email: Yup.string()
         .email('Invalid email format')
@@ -54,14 +54,12 @@ const NewClient = () => {
       .then(res => {
         if (!res.ok) {
           return res.json().then(err => {
-            // Handle different error formats
             let errorMessage = 'Failed to create client'
             if (err.error) {
               errorMessage = err.error
             } else if (typeof err === 'string') {
               errorMessage = err
             } else if (err && typeof err === 'object') {
-              // If it's a validation error object, extract the first error
               const firstError = Object.values(err)[0]
               if (Array.isArray(firstError)) {
                 errorMessage = firstError[0]

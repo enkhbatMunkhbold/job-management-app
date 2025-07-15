@@ -29,16 +29,6 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* .job-category {
-  color: var(--text-secondary);
-  font-size: 1rem;
-  font-weight: 500;
-  background-color: var(--accent-light);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  display: inline-block;
-} */
-
 .job-details-content {
   margin-bottom: 2rem;
 }

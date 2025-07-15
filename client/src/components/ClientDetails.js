@@ -1,40 +1,40 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import UserContext from '../context/UserContext'
 import '../styling/clientDetails.css'
 
 function ClientDetails() {
   const { clientId } = useParams()
+  const { user, isLoading } = useContext(UserContext)
   const [ client, setClient ] = useState(null)
-  const [ loading, setLoading ] = useState(true)
   const [ error, setError ] = useState(null)
 
+  console.log('User from ClientDetails:', user)
+  console.log("client ID:", parseInt(clientId))
+  console.log("user.clients:", user?.clients)
+  
   useEffect(() => {
-    const fetchClientDetails = async (clientId) => {
-      try {
-        setLoading(true)
-        const response = await fetch(`/clients/${clientId}`)
-
-        if(!response.ok) {
-          throw new Error('Failed to fetch client details')
-        }
-
-        const clientData = await response.json()
-        setClient(clientData)
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
+    if (user && user.clients && clientId) {
+      const foundClient = user.clients.find(client => client.id === parseInt(clientId))
+      console.log('Found client:', foundClient)
+      if (foundClient) {
+        setClient(foundClient)
+        setError(null)
+      } else {
+        setError('Client not found')
+        setClient(null)
       }
+    } else if (user && !user.clients) {
+      setError('No clients data available')
+      setClient(null)
     }
+  }, [user, user?.clients, clientId])
 
-    if (clientId) {
-      fetchClientDetails(clientId)
-    }
-  }, [clientId])
+  console.log('Client from ClientDetails:', client)
 
-  if (loading) return <div className="loading">Loading...</div>
+  if (isLoading) return <div className="loading">Loading...</div>
   if (error) return <div className="error">Error: {error}</div>
-  if (!client) return <div className="error">Client not found</div>
+  if (!client) return <div className="loading">Loading client details...</div>
 
   return (
     <div className="client-details-container">
@@ -55,10 +55,6 @@ function ClientDetails() {
                 <div className="info-item">
                   <span className="label">Phone:</span>
                   <span className="value">{client.phone}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">Client ID:</span>
-                  <span className="value">{client.id}</span>
                 </div>
               </div>
             </div>

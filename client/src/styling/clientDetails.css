@@ -165,6 +165,7 @@
 }
 
 .view-orders-button {
+  text-align: center;
   background-color: var(--text-primary);
   color: var(--header);
 }

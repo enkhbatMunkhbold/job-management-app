@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import UserContext from '../context/UserContext'
+import JobsContext from '../context/JobsContext'
 import JobCard from './JobCard'
 import ClientCard from './ClientCard'
 import '../styling/jobCard.css'
@@ -9,13 +10,14 @@ import '../styling/profile.css'
 const Profile = () => {
   const navigate = useNavigate()
   const { user, refreshUser } = useContext(UserContext)
+  const { deleteJob } = useContext(JobsContext)
   const [ showClients, setShowClients ] = useState(false)
   const [ showCreateOptions, setShowCreateOptions ] = useState(false)
   const createButtonRef = useRef(null)
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (createButtonRef.current && !createButtonRef.current.contains(event.target)) {
+    const handleClickOutside = (e) => {
+      if (createButtonRef.current && !createButtonRef.current.contains(e.target)) {
         setShowCreateOptions(false)
       }
     }
@@ -31,16 +33,8 @@ const Profile = () => {
 
   const handleDeleteJob = async (jobId) => {
     try {
-      const response = await fetch(`/jobs/${jobId}`, {
-        method: 'DELETE',
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to delete job')
-      }
-
-      // Refresh user context to update the UI
+      await deleteJob(jobId)
+      // Refresh user data to update the jobs list
       await refreshUser()
     } catch (err) {
       console.error('Error deleting job:', err)
@@ -55,8 +49,10 @@ const Profile = () => {
 
   const handleDeleteClient = async (clientId) => {
     try {
+      // Delete client using the clients endpoint
       const response = await fetch(`/clients/${clientId}`, {
         method: 'DELETE',
+        credentials: 'include'
       })
 
       if (!response.ok) {
@@ -64,7 +60,7 @@ const Profile = () => {
         throw new Error(errorData.error || 'Failed to delete client')
       }
 
-      // Refresh user context to update the UI
+      // Refresh user data to update the clients list
       await refreshUser()
     } catch (err) {
       console.error('Error deleting client:', err)
@@ -72,11 +68,15 @@ const Profile = () => {
     }
   }
 
-  const jobCards = user.jobs.map( job => {
+  // Use user.jobs instead of global jobs to show only user's jobs
+  const userJobs = user.jobs || []
+  const jobCards = userJobs.map( job => {
     return <JobCard key={job.id} job={job} showDetails={true} onDelete={handleDeleteJob} />
   })
 
-  const clientCards = user.clients.map( client => {
+  // Use user.clients instead of ClientsContext
+  const userClients = user.clients || []
+  const clientCards = userClients.map( client => {
     return <ClientCard key={client.id} client={client} onDelete={handleDeleteClient} />
   })
 
@@ -120,16 +120,10 @@ const Profile = () => {
           </button>
           {showCreateOptions && (
             <div className="create-options">
-              <button 
-                className="create-option"
-                onClick={handleCreateJob}
-              >
+              <button className="create-option" onClick={handleCreateJob}>
                 New Job
               </button>
-              <button 
-                className="create-option"
-                onClick={handleCreateClient}
-              >
+              <button className="create-option" onClick={handleCreateClient}>
                 New Client
               </button>
             </div>

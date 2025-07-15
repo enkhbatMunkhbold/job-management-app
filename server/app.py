@@ -82,7 +82,10 @@ class CheckSession(Resource):
             if user:
                 print(f"DEBUG: User {user.username} has {len(user.clients)} clients")
                 print(f"DEBUG: User {user.username} has {len(user.jobs)} jobs")
-                return user_schema.dump(user), 200
+                user_data = user_schema.dump(user)
+                print(f"DEBUG: Serialized user data keys: {user_data.keys()}")
+                print(f"DEBUG: User clients in serialized data: {len(user_data.get('clients', []))}")
+                return user_data, 200
             return {'error': 'Not authenticated'}, 401
         return {'error': 'Not authenticated'}, 401
         
