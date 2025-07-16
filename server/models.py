@@ -2,7 +2,6 @@ from marshmallow import validates, ValidationError, post_load, fields
 from marshmallow_sqlalchemy import auto_field
 from datetime import date
 from config import db, bcrypt, ma
-# from sqlalchemy import distinct
 
 class User(db.Model):
   __tablename__ = 'users'
@@ -18,18 +17,6 @@ class User(db.Model):
                           primaryjoin='User.id == Order.user_id',
                           secondaryjoin='Job.id == Order.job_id',
                           viewonly=True)
-
-
-  # @property
-  # def jobs(self):
-  #   return db.session.query(Job).join(Order).join(Client).filter(
-  #     Client.user_id == self.id
-  #   ).distinct().all()
-  
-  # def get_jobs_query(self):
-  #   return db.session.query(Job).join(Order).join(Client).filter(
-  #     Client.user_id == self.id
-  #   ).distinct()
   
   def set_password(self, password):
       if len(password) < 8:
@@ -89,8 +76,6 @@ class Order(db.Model):
   user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
   client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
   job_id = db.Column(db.Integer, db.ForeignKey('jobs.id'), nullable=False)
-  
-  # user = db.relationship('User')
 
   def __repr__(self):
      return f'<Order {self.status}>'
