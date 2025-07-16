@@ -8,6 +8,8 @@ The **Job Management App** helps users efficiently manage their job orders and r
 
 - [Work Environment](#work-environment)
 
+- [Login/Register](#loginregister)
+
 - [Home](#home)
 
 - [Profile](#profile)
@@ -16,9 +18,9 @@ The **Job Management App** helps users efficiently manage their job orders and r
 
 - [Client Card](#client-card)
 
-- [Login](#login)
+- [Create New Job](#create-new-job)
 
-- [Ticket Card](#ticket-card)
+- [Create New Client](#create-new-client)
   
 
 ## Work Environment  
@@ -86,21 +88,48 @@ At the bottom of each client card are two buttons:
 
 > **Important:** Since the client list belongs exclusively to the user, deleting a client will **permanently remove** that client from the entire system—not just from the user's profile.
 
-## Login
+## Create New Job
 
-If a user wants to log in, they can click the **Login** button located at the top-right corner of the page.
-A login form will appear in a window.
-The user must enter their **Username** and **Password**, then click the **Login** button at the bottom of the form.
-If the login is successful, the user will be redirected to their **Profile** page.
-If the login fails, an error message ***"Username or password is incorrect"*** will be displayed.
+➕ Creating a **New Job**
+There are two ways for a user to create a new job in the **Job Management App**:
+From the **Home Page**:
+On the **Home** page, directly below the welcome message, there is a **Create New Job** button. Clicking this button takes the user to the **Create New Job** page.
+From the **Profile Page**:
+On the **Profile** page, there is a **Create** button. Clicking it reveals a dropdown menu with two options: **New Job** and **New Client**. Selecting **New Job** also navigates the user to the **Create New Job** page.
 
-## Profile Old
+📝 **Create New Job** page
+On the **Create New Job** page, the user is presented with a form containing labeled fields to enter all the necessary details about the job.
+At the top of the form is a **Back to Profile** button, which takes the user back to the **Profile** page.
+At the bottom of the form are two buttons:
+**Cancel** – navigates the user back to the **Profile** page.
+**Create Job** – submits the form and redirects the user to the **Home** page, where the newly created job will appear.
 
-After signing up or logging in, the user can view their purchased tickets on the **Profile** page.
-At the top-left corner, a welcome message appears: **"Welcome, (Username)!"**
-Below the welcome message, there is a title that says **"Your Tickets:"** followed by the list of purchased tickets.
+## Create new Client
 
-If the user wants to purchase more tickets, they can return to the **Home** page and select additional movies from the **Movie List**.
+Creating a new client is as same as creating a new job, but couple of differences. To create a new client, the user should click on **Create** button, which is right below the welcoming message on **Profile** page. Then by selecting **New Client**, the user opens **Create New Client** page, where finds a form with fields for all neseccary info for the new client. All three buttons will navigate the user to the **Profile** page, with or without the created new user.
+
+➕ **Creating a New Client**
+Creating a new client follows the same process as creating a new job, with a few key differences.
+
+To create a new client, the user should click the **Create** button located just below the welcome message on the **Profile** page. From the dropdown menu that appears, selecting **New Client** navigates the user to the **Create New Client** page.
+
+On this page, the user is presented with a form containing fields for all the necessary information about the new client.
+
+At the bottom of the form are three buttons:
+
+- **Back to Profile**
+
+- **Cancel**
+
+- **Create Client**
+
+All three buttons redirect the user to the **Profile** page. However:
+
+- **Back to Profile** and **Cancel** return the user without saving any new data.
+
+- **Create Client** submits the form and adds the new client to the user’s client list.
+
+
 
 ## Ticket card
 

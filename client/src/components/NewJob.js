@@ -37,7 +37,7 @@ const NewJob = () => {
         console.log('Submitting job data:', values)
         await createJob(values)
         console.log('Job created successfully')
-        navigate('/profile')
+        navigate('/home')
       } catch (err) {
         let errorMessage = 'Failed to create job'
         if (err.message) {
