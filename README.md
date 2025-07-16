@@ -1,16 +1,16 @@
-# Phase5 Project - Freelancer Task Management App
+# Job Management App
 
 ## Description 
 
-The **Movie Ticket** app allows users to purchase movie tickets by selecting their desired movie, showtime, and number of tickets. To use the app, users must first sign up or log in. Purchased tickets are saved to the logged-in user's profile. If a user wishes to buy more tickets, they can simply click the **Home** button to return to the homepage, where they can select and purchase additional movie tickets.
+The **Job Management App** helps users efficiently manage their job orders and related data, including Jobs and Clients. Users can create, edit, and delete Jobs, Clients, and Orders to suit their business needs. Each Order includes a **status** and a **due_day**, allowing users to stay organized and focused on specific tasks. Additionally, users can add notes to each Client's profile to keep track of special requirements or preferences for future reference.
 
 ## Table Of Contents 
 
 - [Work Environment](#work-environment)
 
-- [Home (Unsigned)](#home-unsigned)
+- [Home](#home)
 
-- [Movie Card](#movie-card)
+- [Profile](#profile)
 
 - [Create Movie](#create-movie)
 
@@ -18,29 +18,40 @@ The **Movie Ticket** app allows users to purchase movie tickets by selecting the
 
 - [Login](#login)
 
-- [Profile](#profile)
-
 - [Ticket Card](#ticket-card)
   
 
 ## Work Environment  
 
-The **Movie Ticket** app is built in **React** (a JavaScript library) on the front-end and **Flask** (Python) on the back-end. 
-The back-end runs on port 5555, and front-end runs on port 3000. Therefore, the app's pages are accessible at the following local URLs:
-- Home: - <http://localhost:3000/>  
-- Signupt: - <http://localhost:3000/signup>
+The **Job Management App** is a full-stack web application built with **React** on the front end and **Flask** (Python) on the back end. On the front end, it utilizes the **useContext** hook to manage and share Jobs and User data across multiple components, enabling smooth and centralized state management.
+On the back end, the app is powered by the **Flask** framework, along with key tools such as **SQLAlchemy** for database interaction and **Marshmallow** for data serialization and validation.
+The development servers run on different ports:
+The back end runs on port 5555
+The front end runs on port 3000
+
+As a result, the app's pages can be accessed locally at the following URLs:  
+- Signupt: - <http://localhost:3000/register>
 - Login: -<http://localhost:3000/login>
+- Home: - <http://localhost:3000/home>
 - User Profile: -<http://localhost:3000/profile> 
+
+## Login/Register
+
+When a user opens the app in the browser, the first screen they see is the **Register** page with a registration form. New users can fill out the form with a **valid username**, **email address**, and matching **password** and **password confirmation** to create an account.
+If the user already has an account, they can simply click on the Login option and sign in using their existing username and password.
 
 ## Home
 
-When a user opens the **Movie Ticket** app, it first loads the Home page. 
-On the Home page, users can view a list of available movies. 
-To purchase movie tickets, a user must login. If the user does not have an account, they will need to signup first.
+After login to **Job Management App**, the user will directed to the **Home page**. 
+On the this page, users can see *Welcome, Username* message and **Create New Job** button directly under it. Below the create button there is a list of job cards. Each card on this list has a **Title** and below it **View Details** and **Create Order** buttons. if user clicks on the **Create New Job** button, then it directs him/her to *new_job* directory. If the user clicks **View Details** button, then he/she will be directed to page where more info about the job displayed. Similarly, if he/she clicks on **Create Order**, then the user goes to *new_job* route.
 
-If a user already has an account, then the logged-in **Home** page will display **Movie Cards**, through which the user can purchase tickets. 
+After logging into the **Job Management App**, the user is redirected to the **Home page**. At the top of the page, a personalized message—"*Welcome, [Username]*"—is displayed, followed by a **Create New Job** button.
+Below the button is a list of job cards. Each card displays a **Job Title**, along with two buttons: **View Details** and **Create Order**.
+* Clicking **Create New Job** takes the user to the /new_job route, where they can add a new job.
+* Clicking **View Details** navigates to a page that shows more detailed information about the selected job.
+* Clicking **Create Order** also redirects the user to the /new_job route, allowing them to create an order associated with that job.
 
-## Movie Card
+## Profile
 
 Each **Movie Card** displays the movie title in the top-left corner. 
 There are also two dropdown menus: one for selecting the **number of tickets** and another for choosing the **showtime**.
@@ -68,7 +79,7 @@ The user must enter their **Username** and **Password**, then click the **Login*
 If the login is successful, the user will be redirected to their **Profile** page.
 If the login fails, an error message ***"Username or password is incorrect"*** will be displayed.
 
-## Profile
+## Profile Old
 
 After signing up or logging in, the user can view their purchased tickets on the **Profile** page.
 At the top-left corner, a welcome message appears: **"Welcome, (Username)!"**
