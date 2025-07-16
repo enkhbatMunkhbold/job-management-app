@@ -177,21 +177,21 @@ There are two ways to view an **Orders List** in the **Job Management App**, dep
 1. 🧰 **Orders List for a Specific Job**
 To view orders associated with a particular job:
 
-  - Navigate to the **Profile** page and click the **Show My Jobs** button.
+  * Navigate to the **Profile** page and click the **Show My Jobs** button.
 
-  - A list of job cards will appear, each with a **View Orders** button at the bottom.
+  * A list of job cards will appear, each with a **View Orders** button at the bottom.
 
-  - Clicking this button takes the user to a page displaying all orders related to that job.
+  * Clicking this button takes the user to a page displaying all orders related to that job.
 
 
 2. 👤 **Orders List for a Specific Client**
 To view orders associated with a specific client:
 
-  - From the **Profile** page, click the **Show My Clients** button.
+  * From the **Profile** page, click the **Show My Clients** button.
 
-  - A list of client cards will be displayed, each also containing a **View Orders** button.
+  * A list of client cards will be displayed, each also containing a **View Orders** button.
 
-  - Clicking this button takes the user to a page listing all orders placed by that client.
+  * Clicking this button takes the user to a page listing all orders placed by that client.
 
 
 🧾 **Order Card Details**
