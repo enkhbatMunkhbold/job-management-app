@@ -12,7 +12,7 @@ The **Job Management App** helps users efficiently manage their job orders and r
 
 - [Profile](#profile)
 
-- [Create Movie](#create-movie)
+- [Job Card](#job-card)
 
 - [Signup](#signup)
 
@@ -42,28 +42,21 @@ If the user already has an account, they can simply click on the Login option an
 
 ## Home
 
-After login to **Job Management App**, the user will directed to the **Home page**. 
-On the this page, users can see *Welcome, Username* message and **Create New Job** button directly under it. Below the create button there is a list of job cards. Each card on this list has a **Title** and below it **View Details** and **Create Order** buttons. if user clicks on the **Create New Job** button, then it directs him/her to *new_job* directory. If the user clicks **View Details** button, then he/she will be directed to page where more info about the job displayed. Similarly, if he/she clicks on **Create Order**, then the user goes to *new_job* route.
-
-After logging into the **Job Management App**, the user is redirected to the **Home page**. At the top of the page, a personalized message—"*Welcome, [Username]*"—is displayed, followed by a **Create New Job** button.
-Below the button is a list of job cards. Each card displays a **Job Title**, along with two buttons: **View Details** and **Create Order**.
+After logging into the **Job Management App**, the user is redirected to the **Home page**. At the top of the page, a personalized message—"*Welcome, [Username]*"—is displayed, followed by a **Create New Job** button. The navigation bar at the top of the website contains two buttons: **Profile** and **Sign Out**, with the **Profile** button is highlighted to indicate the current page.
+Below the button is a list of job cards on the market. Each card displays a **Job Title**, along with two buttons: **View Details** and **Create Order**.
 * Clicking **Create New Job** takes the user to the /new_job route, where they can add a new job.
 * Clicking **View Details** navigates to a page that shows more detailed information about the selected job.
 * Clicking **Create Order** also redirects the user to the /new_job route, allowing them to create an order associated with that job.
 
 ## Profile
 
-Each **Movie Card** displays the movie title in the top-left corner. 
-There are also two dropdown menus: one for selecting the **number of tickets** and another for choosing the **showtime**.
-The card shows the **ticket price** and the t**otal price**, which initially is $0.00. 
-When the user selects the number of tickets, the **Total Price** updates automatically. 
-At the bottom of the Movie Card, there is a **Buy Ticket** button. When the user clicks this button, they are redirected to the **Profile** page.
+When the user clicks the **Profile** button in the navigation bar, they are redirected to the **Profile page**. At the same time, the **Profile** button in the navigation bar changes to **Home**, allowing the user to navigate back.
+At the top of the **Profile page**, the same personalized welcome message—“Welcome, [Username]”—is displayed. Below it are three buttons: **Show My Jobs**, **Show My Clients**, and **Create**. By default, the **Show My Jobs** button is highlighted when the user first lands on the page, and the highlight switches depending on which button is clicked.
+A list of the user's own job cards is displayed below these buttons. When the user hovers over a job card, it animates slightly to indicate that it is active or focused.
 
-## Create Movie
+## Job Card
 
-At the bottom of the **Home** page, there is a **Create a New Movie** section. 
-If a user wants to add a new movie to the list, they can fill out the form and click the **Create Movie** button. 
-Once the button is clicked, the new movie will appear in the movie list.
+There are two different job cards in the app, one is in the **Home** page, and the other one is on **Profile** page. 
 
 ## Signup  
 
