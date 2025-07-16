@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import UserContext from '../context/UserContext'
+import JobsContext from '../context/JobsContext'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import '../styling/newOrder.css'
@@ -8,10 +9,8 @@ import '../styling/newOrder.css'
 const NewOrder = () => {
   const navigate = useNavigate()
   const { user, refreshUser } = useContext(UserContext)
-  const [ job, setJob ] = useState({})
+  const { jobs } = useContext(JobsContext)
   const [ clients, setClients ] = useState([])
-  const [ loading, setLoading ] = useState(true)
-  const [ error, setError ] = useState(null)
   const [ searchParams ] = useSearchParams()
 
   // Get job_id from URL query parameter
@@ -22,27 +21,10 @@ const NewOrder = () => {
       navigate('/login')
       return
     }
-
-    // Fetch job details
-    fetch(`/jobs/${jobId}`)
-      .then(res => {
-        if (!res.ok) {
-          throw new Error("Failed to fetch job")
-        }
-        return res.json()
-      })
-      .then(jobData => {
-        setJob(jobData)
-        setLoading(false)
-      })
-      .catch(err => {
-        setError(err.message)
-        setLoading(false)
-      })
-
-    // Set clients from user context
     setClients(user.clients || [])
-  }, [jobId, user, navigate])
+  }, [user, navigate])
+
+  const job = jobs.find(j => j.id === parseInt(jobId)) || {}
 
   const formik = useFormik({
     initialValues: {
@@ -105,25 +87,10 @@ const NewOrder = () => {
         })        
       })
       .catch(err => {
-        setError(err.message)
+        console.error('Error creating order:', err.message)
       })
     }
   })
-
-  if (loading) {
-    return <div className="loading">Loading...</div>
-  }
-
-  if (error) {
-    return (
-      <div className="error-container">
-        <div className="error">Error: {error}</div>
-        <button onClick={() => navigate('/home')} className="back-button">
-          Back to Home
-        </button>
-      </div>
-    )
-  }
 
   if (!job.id) {
     return (

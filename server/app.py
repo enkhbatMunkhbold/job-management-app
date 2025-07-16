@@ -80,11 +80,11 @@ class CheckSession(Resource):
         if user_id:
             user = db.session.get(User, user_id)
             if user:
-                print(f"DEBUG: User {user.username} has {len(user.clients)} clients")
-                print(f"DEBUG: User {user.username} has {len(user.jobs)} jobs")
+                # print(f"DEBUG: User {user.username} has {len(user.clients)} clients")
+                # print(f"DEBUG: User {user.username} has {len(user.jobs)} jobs")
                 user_data = user_schema.dump(user)
-                print(f"DEBUG: Serialized user data keys: {user_data.keys()}")
-                print(f"DEBUG: User clients in serialized data: {len(user_data.get('clients', []))}")
+                # print(f"DEBUG: Serialized user data keys: {user_data.keys()}")
+                # print(f"DEBUG: User clients in serialized data: {len(user_data.get('clients', []))}")
                 return user_data, 200
             return {'error': 'Not authenticated'}, 401
         return {'error': 'Not authenticated'}, 401
@@ -126,7 +126,7 @@ class Clients(Resource):
                 return {'error': 'User not found'}, 404
             
             data = request.get_json()
-            print(f"Received client data: {data}")
+            # print(f"Received client data: {data}")
             data['user_id'] = user_id 
             new_client = client_schema.load(data)
 
@@ -144,24 +144,24 @@ class Clients(Resource):
 api.add_resource(Clients, '/clients')
 
 class ClientById(Resource):
-    def get(self, client_id):
-        try:
-            user_id = session.get('user_id')
-            if not user_id:
-                return {'error': 'Not authenticated'}, 401
+    # def get(self, client_id):
+    #     try:
+    #         user_id = session.get('user_id')
+    #         if not user_id:
+    #             return {'error': 'Not authenticated'}, 401
             
-            client = Client.query.get(client_id)
-            if not client:
-                return {'error': 'Client not found'}, 404
+    #         client = Client.query.get(client_id)
+    #         if not client:
+    #             return {'error': 'Client not found'}, 404
             
-            # Check if the client belongs to the authenticated user
-            if client.user_id != user_id:
-                return {'error': 'Unauthorized access to client'}, 403
+    #         # Check if the client belongs to the authenticated user
+    #         if client.user_id != user_id:
+    #             return {'error': 'Unauthorized access to client'}, 403
             
-            return client_schema.dump(client), 200
+    #         return client_schema.dump(client), 200
             
-        except Exception as e:
-            return {'error': f'Internal server error: {str(e)}'}, 500
+    #     except Exception as e:
+    #         return {'error': f'Internal server error: {str(e)}'}, 500
     
     def delete(self, client_id):
         try:
@@ -423,24 +423,24 @@ class Orders(Resource):
 api.add_resource(Orders, '/orders')
 
 class OrderById(Resource):
-    def get(self, order_id):
-        try:
-            user_id = session.get('user_id')
-            if not user_id:
-                return {'error': 'Not authenticated'}, 401
+    # def get(self, order_id):
+    #     try:
+    #         user_id = session.get('user_id')
+    #         if not user_id:
+    #             return {'error': 'Not authenticated'}, 401
             
-            order = Order.query.get(order_id)
-            if not order:
-                return {'error': 'Order not found'}, 404
+    #         order = Order.query.get(order_id)
+    #         if not order:
+    #             return {'error': 'Order not found'}, 404
             
-            # Check if the order belongs to the authenticated user
-            if order.user_id != user_id:
-                return {'error': 'Unauthorized access to order'}, 403
+    #         # Check if the order belongs to the authenticated user
+    #         if order.user_id != user_id:
+    #             return {'error': 'Unauthorized access to order'}, 403
             
-            return order_schema.dump(order), 200
+    #         return order_schema.dump(order), 200
             
-        except Exception as e:
-            return {'error': f'Internal server error: {str(e)}'}, 500
+    #     except Exception as e:
+    #         return {'error': f'Internal server error: {str(e)}'}, 500
     
     def patch(self, order_id):
         try:

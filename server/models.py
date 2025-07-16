@@ -107,6 +107,7 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
 
   jobs = fields.Method('get_user_jobs', dump_only=True)
   clients = fields.Nested('ClientSchema', many=True, dump_only=True)
+  orders = fields.Method('get_user_orders', dump_only=True)
 
   def get_user_jobs(self, obj):
     jobs_with_clients = []
@@ -131,6 +132,35 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
       jobs_with_clients.append(job_data)
     
     return jobs_with_clients
+
+  def get_user_orders(self, obj):
+    orders_data = []
+    for order in obj.orders:
+      order_data = {
+        'id': order.id,
+        'description': order.description,
+        'rate': order.rate,
+        'location': order.location,
+        'start_date': order.start_date.isoformat() if order.start_date else None,
+        'due_date': order.due_date.isoformat() if order.due_date else None,
+        'status': order.status,
+        'client': {
+          'id': order.client.id,
+          'name': order.client.name,
+          'email': order.client.email,
+          'phone': order.client.phone
+        },
+        'job': {
+          'id': order.job.id,
+          'title': order.job.title,
+          'category': order.job.category,
+          'description': order.job.description,
+          'duration': order.job.duration
+        }
+      }
+      orders_data.append(order_data)
+    
+    return orders_data
 
   @validates('email')
   def validate_email(self, value, **kargs):

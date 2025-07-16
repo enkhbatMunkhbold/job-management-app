@@ -1,56 +1,33 @@
-import { useEffect, useState, useCallback, useContext } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useState, useContext } from 'react'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import OrderCard from './OrderCard'
 import UserContext from '../context/UserContext'
 import '../styling/orderList.css'
 
 function OrderList() {
+  const navigate = useNavigate()
   const { clientId, jobId } = useParams()
-  const { refreshUser } = useContext(UserContext)
-  const [ orders, setOrders ] = useState([])
-  const [ client, setClient ] = useState(null)
-  const [ job, setJob ] = useState(null)
-  const [ loading, setLoading ] = useState(true)
-  const [ error, setError ] = useState(null)
+  const { user, refreshUser } = useContext(UserContext)
   const [ deletingOrderId, setDeletingOrderId ] = useState(null)
 
-  const fetchOrders = useCallback(async () => {
-    try {
-      setLoading(true)
-      let response
-      let data
-
-      if (clientId) {
-        // Fetch client orders
-        response = await fetch(`/clients/${clientId}/orders`)
-        if (!response.ok) {
-          throw new Error('Failed to fetch client orders')
-        }
-        data = await response.json()
-        setOrders(data.orders)
-        setClient(data.client)
-      } else if (jobId) {
-        // Fetch job orders
-        response = await fetch(`/jobs/${jobId}/orders`)
-        if (!response.ok) {
-          throw new Error('Failed to fetch job orders')
-        }
-        data = await response.json()
-        setOrders(data.orders)
-        setJob(data.job)
-      }
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
+  // Get orders from user context based on clientId or jobId
+  const getFilteredOrders = () => {
+    if (!user?.orders) return []
+    
+    if (clientId) {
+      return user.orders.filter(order => order.client.id === parseInt(clientId))
+    } else if (jobId) {
+      return user.orders.filter(order => order.job.id === parseInt(jobId))
     }
-  }, [clientId, jobId])
+    
+    return []
+  }
 
-  useEffect(() => {
-    if (clientId || jobId) {
-      fetchOrders()
-    }
-  }, [clientId, jobId, fetchOrders])
+  const orders = getFilteredOrders()
+  
+  // Get client or job info from user context
+  const client = clientId ? user?.clients?.find(c => c.id === parseInt(clientId)) : null
+  const job = jobId ? user?.jobs?.find(j => j.id === parseInt(jobId)) : null
 
   const handleDeleteOrder = async (orderId) => {
     try {
@@ -64,26 +41,21 @@ function OrderList() {
         throw new Error(errorData.error || 'Failed to delete order')
       }
 
-      // Remove the deleted order from the state
-      setOrders(orders.filter(order => order.id !== orderId))
-      
-      // Refresh user context to update client/job data in other components
+      // Refresh user context to update order data
       await refreshUser()
     } catch (err) {
-      setError(err.message)
+      console.error('Error deleting order:', err)
     } finally {
       setDeletingOrderId(null)
     }
   }
 
   const handleEditOrder = (order) => {
-    // Navigate to edit order page
-    window.location.href = `/edit_order/${order.id}`
+    navigate(`/edit_order/${order.id}`) 
   }
 
-  if (loading) return <div className="loading">Loading...</div>
-  if (error) return <div className="error">Error: {error}</div>
-  if (!client && !job) return <div className="error">Not found</div>
+  if (!user) return <div className="error">Please log in to view orders.</div>
+  if (!client && !job) return <div className="error">Client or job not found.</div>
 
   const title = client ? `Orders for ${client.name}` : `Orders for ${job.title}`
   const noOrdersMessage = client ? "No orders found for this client." : "No orders found for this job."

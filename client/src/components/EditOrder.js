@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import UserContext from '../context/UserContext'
 import * as Yup from 'yup'
@@ -8,35 +8,9 @@ import '../styling/newOrder.css'
 const EditOrder = () => {
   const navigate = useNavigate()
   const { orderId } = useParams()
-  const { refreshUser } = useContext(UserContext)
-  const [ order, setOrder ] = useState(null)
-  const [ loading, setLoading ] = useState(true)
-  const [ error, setError ] = useState(null)
+  const { user, refreshUser } = useContext(UserContext)
 
-  useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const response = await fetch(`/orders/${orderId}`, {
-          credentials: 'include'
-        })
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch order')
-        }
-        
-        const orderData = await response.json()
-        setOrder(orderData)
-        setLoading(false)
-      } catch (err) {
-        setError(err.message)
-        setLoading(false)
-      }
-    }
-
-    if (orderId) {
-      fetchOrder()
-    }
-  }, [orderId])
+  const order = user.orders.find(or => or.id === parseInt(orderId))
 
   const formik = useFormik({
     initialValues: {
@@ -92,10 +66,6 @@ const EditOrder = () => {
       }
     }
   })
-
-  if (loading) return <div className="loading">Loading order details...</div>
-  if (error) return <div className="error">Error: {error}</div>
-  if (!order) return <div className="error">Order not found</div>
 
   return (
     <div className="new-order-container">
