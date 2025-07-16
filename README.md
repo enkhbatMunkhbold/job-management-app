@@ -56,9 +56,24 @@ A list of the user's own job cards is displayed below these buttons. When the us
 
 ## Job Card
 
-There are two different job cards in the app, one is in the **Home** page, and the other one is on **Profile** page. 
+There are two types of Job Cards in the app—one displayed on the **Home** page and the other on the **Profile** page.
+🏠 **Home Page – Job Card**
+The Home page job card is minimal and displays only the job *Title* along with two buttons: *View Details* and *Create Order*.
+- Clicking **View Details** navigates the user to a separate **Job Details** page where more information about the selected job is shown.
+- At the bottom of the **Job Details** page, there are two buttons: **Back To Profile** and **Create Order**.
+  - **Back To Profile** returns the user to the **Profile** page. 
+  - **Create Order** directs the user to the **Create New Order** page.
 
-## Signup  
+👤 **Profile Page – Job Card**
+The **Profile** page displays more advanced job cards that contain the same detailed information shown on the **Job Details** page, with additional features:
+- At the bottom of each card, there is a *list of clients* who have placed orders for that job. Each client name is clickable and redirects the user to that client's detailed          information page.
+- Below the client list, there are two buttons:
+  - **View Orders** – navigates to the Orders page for that specific job.
+  - **Trash** – deletes the job.
+- Additionally, when the user hovers over a job card, an **Edit** button appears in the top-left corner.
+  - Clicking Edit takes the user to the Edit Job page.
+
+## Client Card  
 
 When a user clicks on **Signup** button signup page will open up. 
 The user can fill out the form by entering **Username**, **Password** and **Password Confirmation**. 
