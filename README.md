@@ -21,6 +21,8 @@ The **Job Management App** helps users efficiently manage their job orders and r
 - [Create New Job](#create-new-job)
 
 - [Create New Client](#create-new-client)
+
+- [Orders List](#orders-list)
   
 
 ## Work Environment  
@@ -31,9 +33,9 @@ On the back end, the app is powered by the **Flask** framework, along with key t
 
 The development servers run on different ports:
 
-- The back end runs on port 5555
+- The back end runs on port **5555**
 
-- The front end runs on port 3000
+- The front end runs on port **3000**
 
 As a result, the app's pages can be accessed locally at the following URLs:  
 
@@ -144,8 +146,6 @@ At the bottom of the form are two buttons:
 
 ## Create new Client
 
-Creating a new client is as same as creating a new job, but couple of differences. To create a new client, the user should click on **Create** button, which is right below the welcoming message on **Profile** page. Then by selecting **New Client**, the user opens **Create New Client** page, where finds a form with fields for all neseccary info for the new client. All three buttons will navigate the user to the **Profile** page, with or without the created new user.
-
 ➕ **Creating a New Client**
 Creating a new client follows the same process as creating a new job, with a few key differences.
 
@@ -169,9 +169,39 @@ All three buttons redirect the user to the **Profile** page. However:
 
 
 
-## Ticket card
+## Orders List
 
-Each ticket card displays information such as the **number of tickets**, **showtime**, **ticket price**, and **total price**.
-Users can modify their tickets by adjusting the number of tickets or selecting a different showtime from the dropdown menu.
-When the number of tickets is changed, the **Total** updates automatically.
-If a user no longer wishes to watch a movie, they can delete the ticket by clicking the **Delete** button on the corresponding ticket card.
+There are two ways to see the **Orders List**:
+
+📋 **Viewing the Orders List**
+There are two ways to view an **Orders List** in the **Job Management App**, depending on whether the orders are related to a **job** or a **client**.
+
+
+1. 🧰 **Orders List for a Specific Job**
+To view orders associated with a particular job:
+
+- Navigate to the **Profile** page and click the **Show My Jobs** button.
+
+- A list of job cards will appear, each with a **View Orders** button at the bottom.
+
+- Clicking this button takes the user to a page displaying all orders related to that job.
+
+
+2. 👤 **Orders List for a Specific Client**
+To view orders associated with a specific client:
+
+From the **Profile** page, click the **Show My Clients** button.
+
+A list of client cards will be displayed, each also containing a **View Orders** button.
+
+Clicking this button takes the user to a page listing all orders placed by that client.
+
+
+🧾 **Order Card Details**
+Each **Order Card** displays all the essential information about the order, including:
+
+- The **status** of the order, which is highlighted in different colors to visually represent its current state (e.g., pending, in progress, completed).
+
+- The **Due Date**, which is shown in **red** to immediately draw the user's attention.
+
+At the bottom of the Order Card is a **Delete** button. Clicking this will permanently remove the order.
