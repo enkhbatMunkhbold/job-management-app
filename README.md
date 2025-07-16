@@ -168,7 +168,6 @@ All three buttons redirect the user to the **Profile** page. However:
 - **Create Client** submits the form and adds the new client to the user’s client list.
 
 
-
 ## Orders List
 
 There are two ways to see the **Orders List**:
@@ -204,4 +203,8 @@ Each **Order Card** displays all the essential information about the order, incl
 
 - The **Due Date**, which is shown in **red** to immediately draw the user's attention.
 
-At the bottom of the Order Card is a **Delete** button. Clicking this will permanently remove the order.
+- A **Delete** button is located at the bottom of the card.
+
+  - If the order's status is **"in progress"**, the **Delete** button is **disabled** to prevent accidental removal.
+
+  - For all other statuses, the button remains enabled and allows the user to delete the order.
